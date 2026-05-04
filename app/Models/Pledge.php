@@ -4,26 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Pledge extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'item_id',
         'donor_name',
         'donor_address',
         'donor_mobile',
-        'pledged_quantity',
     ];
 
-    protected $casts = [
-        'pledged_quantity' => 'decimal:2',
-    ];
-
-    public function item(): BelongsTo
+    public function items(): BelongsToMany
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsToMany(Item::class, 'pledge_items')
+            ->withPivot('pledged_quantity')
+            ->withTimestamps();
     }
 }

@@ -229,6 +229,11 @@
         }
         html:not(.dark) .html-not-dark-cash-card .pub-glow { opacity:.05; }
 
+        /* Section title anchor offset for sticky nav */
+        #pledges, #cash {
+            scroll-margin-top: 80px;
+        }
+
         /* Footer */
         .pub-footer {
             text-align:center; padding:1.5rem 1rem;
@@ -511,7 +516,7 @@
     @endif
 
     {{-- ══ RECENT PLEDGES ══════════════════════════════════ --}}
-    <div class="pub-section-title">මෑත පොරොන්දු</div>
+    <div class="pub-section-title" id="pledges">මෑත පොරොන්දු</div>
 
     @if($recentPledges->isEmpty())
         <p style="text-align:center;color:#6b7280;padding:2rem 0;font-size:.85rem;">පොරොන්දු නොමැත</p>
@@ -521,24 +526,81 @@
                 <div class="pub-pledge-card">
                     <div style="min-width:0;flex:1;">
                         <div class="pub-pledge-name">{{ $pledge->donor_name }}</div>
-                        <div class="pub-pledge-item">{{ optional($pledge->item)->name ?? '—' }}</div>
+                        @if($pledge->items->count() > 0)
+                            <div class="pub-pledge-item">
+                                @foreach($pledge->items as $item)
+                                    <span style="display:inline-block;margin-right:.5rem;">
+                                        {{ $item->name }} · 
+                                        <strong style="color:#10b981;">
+                                            {{ $item->pivot->pledged_quantity ? number_format($item->pivot->pledged_quantity, 2) : '?' }}
+                                        </strong>
+                                        {{ $item->unit }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="pub-pledge-item">—</div>
+                        @endif
                         <div style="font-size:.62rem;color:var(--text-muted);margin-top:.2rem;">
-                            {{ $pledge->created_at->format('d M Y, h:i A') }}
+                            {{ $pledge->updated_at->format('d M Y, h:i A') }}
                         </div>
                     </div>
-                    <div style="text-align:right;">
-                        <div class="pub-pledge-qty">
-                            {{ $pledge->pledged_quantity ? number_format($pledge->pledged_quantity,2) : '?' }}
+                    @if($pledge->items->count() > 0)
+                        <div style="text-align:right;">
+                            <div style="font-size:.75rem;font-weight:700;color:#10b981;">
+                                {{ $pledge->items->count() }} භාණ්ඩ
+                            </div>
                         </div>
-                        <div class="pub-pledge-unit">{{ optional($pledge->item)->unit }}</div>
-                    </div>
+                    @endif
                 </div>
             @endforeach
         </div>
+
+        {{-- Pledge pagination --}}
+        @if($pledgePages > 1)
+        @php $ppStart=max(1,$pledgePage-2); $ppEnd=min($pledgePages,$pledgePage+2); @endphp
+        <div style="display:flex;align-items:center;justify-content:center;gap:.4rem;margin:1rem 0 .5rem;flex-wrap:wrap;">
+            @if($pledgePage>1)
+            <a href="{{ request()->fullUrlWithQuery(['pp'=>$pledgePage-1]) }}#pledges"
+               style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                      background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text-main);text-decoration:none;font-size:.9rem;">‹</a>
+            @else
+            <span style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                         background:var(--mini-bg);border:1px solid var(--mini-border);color:var(--text-muted);font-size:.9rem;">‹</span>
+            @endif
+            @if($ppStart>1)
+                <a href="{{ request()->fullUrlWithQuery(['pp'=>1]) }}#pledges" style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--chip-color);text-decoration:none;font-size:.75rem;font-weight:600;">1</a>
+                @if($ppStart>2)<span style="color:var(--text-muted);font-size:.75rem;">…</span>@endif
+            @endif
+            @for($i=$ppStart;$i<=$ppEnd;$i++)
+                <a href="{{ request()->fullUrlWithQuery(['pp'=>$i]) }}#pledges"
+                   style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;
+                          background:{{ $i===$pledgePage?'rgba(16,185,129,.2)':'var(--chip-bg)' }};
+                          border:1px solid {{ $i===$pledgePage?'rgba(16,185,129,.5)':'var(--chip-border)' }};
+                          color:{{ $i===$pledgePage?'#10b981':'var(--chip-color)' }};
+                          text-decoration:none;font-size:.75rem;font-weight:{{ $i===$pledgePage?'700':'600' }};">{{ $i }}</a>
+            @endfor
+            @if($ppEnd<$pledgePages)
+                @if($ppEnd<$pledgePages-1)<span style="color:var(--text-muted);font-size:.75rem;">…</span>@endif
+                <a href="{{ request()->fullUrlWithQuery(['pp'=>$pledgePages]) }}#pledges" style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--chip-color);text-decoration:none;font-size:.75rem;font-weight:600;">{{ $pledgePages }}</a>
+            @endif
+            @if($pledgePage<$pledgePages)
+            <a href="{{ request()->fullUrlWithQuery(['pp'=>$pledgePage+1]) }}#pledges"
+               style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                      background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text-main);text-decoration:none;font-size:.9rem;">›</a>
+            @else
+            <span style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                         background:var(--mini-bg);border:1px solid var(--mini-border);color:var(--text-muted);font-size:.9rem;">›</span>
+            @endif
+        </div>
+        <p style="text-align:center;font-size:.65rem;color:var(--text-muted);margin-bottom:.5rem;">
+            පිටුව {{ $pledgePage }} / {{ $pledgePages }} &nbsp;·&nbsp; මුළු {{ $pledgeTotal }} පොරොන්දු
+        </p>
+        @endif
     @endif
 
     {{-- ══ CASH DONATIONS ═════════════════════════════════ --}}
-    <div class="pub-section-title">සල්ලි දායකත්ව</div>
+    <div class="pub-section-title" id="cash">සල්ලි දායකත්ව</div>
 
     {{-- Cash search + sort --}}
     <form method="GET" action="" id="cashForm" style="margin-bottom:.75rem;">
@@ -672,6 +734,48 @@
             </span>
         </div>
         @endif
+    @endif
+
+    {{-- Cash pagination --}}
+    @if($cashPages > 1)
+    @php $cpStart=max(1,$cashPage-2); $cpEnd=min($cashPages,$cashPage+2); @endphp
+    <div style="display:flex;align-items:center;justify-content:center;gap:.4rem;margin:1rem 0 .5rem;flex-wrap:wrap;">
+        @if($cashPage>1)
+        <a href="{{ request()->fullUrlWithQuery(['cp'=>$cashPage-1]) }}#cash"
+           style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                  background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text-main);text-decoration:none;font-size:.9rem;">‹</a>
+        @else
+        <span style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                     background:var(--mini-bg);border:1px solid var(--mini-border);color:var(--text-muted);font-size:.9rem;">‹</span>
+        @endif
+        @if($cpStart>1)
+            <a href="{{ request()->fullUrlWithQuery(['cp'=>1]) }}#cash" style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--chip-color);text-decoration:none;font-size:.75rem;font-weight:600;">1</a>
+            @if($cpStart>2)<span style="color:var(--text-muted);font-size:.75rem;">…</span>@endif
+        @endif
+        @for($i=$cpStart;$i<=$cpEnd;$i++)
+            <a href="{{ request()->fullUrlWithQuery(['cp'=>$i]) }}#cash"
+               style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;
+                      background:{{ $i===$cashPage?'rgba(249,115,22,.2)':'var(--chip-bg)' }};
+                      border:1px solid {{ $i===$cashPage?'rgba(249,115,22,.5)':'var(--chip-border)' }};
+                      color:{{ $i===$cashPage?'#fb923c':'var(--chip-color)' }};
+                      text-decoration:none;font-size:.75rem;font-weight:{{ $i===$cashPage?'700':'600' }};">{{ $i }}</a>
+        @endfor
+        @if($cpEnd<$cashPages)
+            @if($cpEnd<$cashPages-1)<span style="color:var(--text-muted);font-size:.75rem;">…</span>@endif
+            <a href="{{ request()->fullUrlWithQuery(['cp'=>$cashPages]) }}#cash" style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--chip-color);text-decoration:none;font-size:.75rem;font-weight:600;">{{ $cashPages }}</a>
+        @endif
+        @if($cashPage<$cashPages)
+        <a href="{{ request()->fullUrlWithQuery(['cp'=>$cashPage+1]) }}#cash"
+           style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                  background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text-main);text-decoration:none;font-size:.9rem;">›</a>
+        @else
+        <span style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                     background:var(--mini-bg);border:1px solid var(--mini-border);color:var(--text-muted);font-size:.9rem;">›</span>
+        @endif
+    </div>
+    <p style="text-align:center;font-size:.65rem;color:var(--text-muted);margin-bottom:.5rem;">
+        පිටුව {{ $cashPage }} / {{ $cashPages }} &nbsp;·&nbsp; මුළු {{ $cashTotal }} දායකයන්
+    </p>
     @endif
 
     {{-- ══ LEGEND ══════════════════════════════════════════ --}}

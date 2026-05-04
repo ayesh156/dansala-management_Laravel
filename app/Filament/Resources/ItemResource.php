@@ -53,9 +53,10 @@ class ItemResource extends Resource
                             ->minValue(0.01)
                             ->step(0.01)
                             ->nullable()
-                            ->placeholder('ප්‍රමාණය නොදන්නේ නම් හිස් කරන්න')
+                            ->placeholder('ප්‍රමාණය ඇතුළත් කරන්න')
                             ->helperText('ප්‍රමාණය නොදන්නේ නම් හිස් කරන්න.')
                             ->suffix(fn ($get) => $get('unit') ?: 'ඒකක')
+                            ->extraInputAttributes(['min' => null, 'required' => false])
                             ->columnSpan(2),
 
                         Forms\Components\Select::make('unit')

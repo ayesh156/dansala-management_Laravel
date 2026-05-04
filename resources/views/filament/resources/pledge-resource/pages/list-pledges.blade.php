@@ -253,7 +253,7 @@ html:not(.dark) .dmp-dropdown-search-wrap { background:#ffffff; }
 
     {{-- Cards --}}
     @forelse ($mobilePledges as $pledge)
-        @php $item = $pledge->item; $accent = $pledge->id % 6; @endphp
+        @php $accent = $pledge->id % 6; @endphp
 
         <div class="dmp-card dmp-a{{ $accent }}">
             <div class="dmp-glow"></div>
@@ -272,26 +272,40 @@ html:not(.dark) .dmp-dropdown-search-wrap { background:#ffffff; }
                             </p>
                         @endif
                     </div>
-                    <span class="dmp-date">{{ $pledge->created_at->format('d M Y') }}</span>
+                    <span class="dmp-date" title="යාවත්කාලීන: {{ $pledge->updated_at->format('d M Y, h:i A') }}">
+                        {{ $pledge->updated_at->format('d M Y') }}
+                    </span>
                 </div>
 
-                <div class="dmp-item-row">
-                    <div class="dmp-item-left">
-                        <span class="dmp-dot"></span>
-                        <span class="dmp-item-pill">{{ $item?->name ?? '—' }}</span>
+                {{-- Multiple Items Display --}}
+                @if($pledge->items->count() > 0)
+                    @foreach($pledge->items as $item)
+                        <div class="dmp-item-row">
+                            <div class="dmp-item-left">
+                                <span class="dmp-dot"></span>
+                                <span class="dmp-item-pill">{{ $item->name }}</span>
+                            </div>
+                            <div style="display:flex;align-items:baseline;flex-shrink:0;margin-left:.5rem;">
+                                @if($item->pivot->pledged_quantity)
+                                    <span class="dmp-qty">{{ number_format($item->pivot->pledged_quantity, 2) }}</span>
+                                    <span class="dmp-qty-unit">{{ $item->unit }}</span>
+                                @else
+                                    <span style="font-size:.72rem;color:#6b7280;background:rgba(255,255,255,.05);
+                                                 padding:.2rem .5rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);">
+                                        ප්‍රමාණය නොදනී
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="dmp-item-row">
+                        <div class="dmp-item-left">
+                            <span class="dmp-dot"></span>
+                            <span class="dmp-item-pill">—</span>
+                        </div>
                     </div>
-                    <div style="display:flex;align-items:baseline;flex-shrink:0;margin-left:.5rem;">
-                        @if($pledge->pledged_quantity)
-                            <span class="dmp-qty">{{ number_format($pledge->pledged_quantity, 2) }}</span>
-                            <span class="dmp-qty-unit">{{ $item?->unit }}</span>
-                        @else
-                            <span style="font-size:.72rem;color:#6b7280;background:rgba(255,255,255,.05);
-                                         padding:.2rem .5rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);">
-                                ප්‍රමාණය නොදනී
-                            </span>
-                        @endif
-                    </div>
-                </div>
+                @endif
 
                 @if($pledge->donor_address)
                     <p class="dmp-address">

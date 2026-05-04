@@ -46,6 +46,7 @@ class PledgeResource extends Resource
                             ->placeholder('දායකයාගේ සම්පූර්ණ නම')
                             ->required()
                             ->maxLength(255)
+                            ->default(fn () => request('donor_name', ''))
                             ->columnSpanFull(),
 
                         Forms\Components\TextInput::make('donor_mobile')
@@ -53,50 +54,69 @@ class PledgeResource extends Resource
                             ->placeholder('077 123 4567')
                             ->tel()
                             ->nullable()
-                            ->maxLength(20),
+                            ->maxLength(20)
+                            ->default(fn () => request('donor_mobile', '')),
 
                         Forms\Components\TextInput::make('donor_address')
                             ->label('ලිපිනය')
                             ->placeholder('ලිපිනය (අත්‍යවශ්‍ය නොවේ)')
                             ->nullable()
-                            ->maxLength(500),
+                            ->maxLength(500)
+                            ->default(fn () => request('donor_address', '')),
                     ])
                     ->columns(2),
 
                 Forms\Components\Section::make('පොරොන්දු විස්තර')
-                    ->description('භාණ්ඩය සහ ප්‍රමාණය තෝරන්න.')
+                    ->description('භාණ්ඩ සහ ප්‍රමාණ එකතු කරන්න.')
                     ->icon('heroicon-o-archive-box')
                     ->schema([
-                        Forms\Components\Select::make('item_id')
-                            ->label('භාණ්ඩය')
-                            ->relationship('item', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->native(false)
-                            ->getOptionLabelFromRecordUsing(function (Item $record) {
-                                $pledged   = (float) $record->pledges()->sum('pledged_quantity');
-                                $remaining = max(0, (float) $record->required_quantity - $pledged);
-                                $pct       = $record->required_quantity > 0
-                                    ? min(100, round(($pledged / $record->required_quantity) * 100))
-                                    : 0;
-                                $unknownCount = $record->pledges()->whereNull('pledged_quantity')->count();
-                                $status = $pct >= 100 ? '✅' : ($pct >= 50 ? '⏳' : '⚠️');
-                                $extra  = $unknownCount > 0 ? " + {$unknownCount} නොදනී" : '';
-                                return "{$status} {$record->name} — ඉතිරි: {$remaining} {$record->unit} ({$pct}%){$extra}";
-                            })
-                            ->helperText('භාණ්ඩය සොයා තෝරන්න.')
-                            ->columnSpanFull(),
+                        Forms\Components\Repeater::make('pledge_items')
+                            ->label('භාණ්ඩ')
+                            ->schema([
+                                Forms\Components\Select::make('item_id')
+                                    ->label('භාණ්ඩය')
+                                    ->options(function () {
+                                        return Item::orderBy('name')->get()->mapWithKeys(function (Item $record) {
+                                            $pledged   = $record->total_pledged;
+                                            $remaining = max(0, (float) $record->required_quantity - $pledged);
+                                            $pct       = $record->fulfillment_percentage;
+                                            $status    = $pct >= 100 ? '✅' : ($pct >= 50 ? '⏳' : '⚠️');
+                                            return [
+                                                $record->id => "{$status} {$record->name} — ඉතිරි: {$remaining} {$record->unit} ({$pct}%)"
+                                            ];
+                                        });
+                                    })
+                                    ->searchable()
+                                    ->required()
+                                    ->native(false)
+                                    ->disableOptionWhen(function ($value, $state, Forms\Get $get) {
+                                        $selectedItems = collect($get('../../pledge_items'))
+                                            ->pluck('item_id')
+                                            ->filter()
+                                            ->toArray();
+                                        return in_array($value, $selectedItems) && $value != $state;
+                                    }),
 
-                        Forms\Components\TextInput::make('pledged_quantity')
-                            ->label('පොරොන්දු ප්‍රමාණය')
-                            ->numeric()
-                            ->minValue(0.01)
-                            ->step(0.01)
-                            ->nullable()
-                            ->helperText('ප්‍රමාණය නොදන්නේ නම් හිස් කරන්න — "ගෙනෙනවා" ලෙස සටහන් වේ.'),
-                    ])
-                    ->columns(2),
+                                Forms\Components\TextInput::make('pledged_quantity')
+                                    ->label('ප්‍රමාණය')
+                                    ->numeric()
+                                    ->minValue(0.01)
+                                    ->step(0.01)
+                                    ->nullable()
+                                    ->helperText('ප්‍රමාණය නොදන්නේ නම් හිස් කරන්න'),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(1)
+                            ->addActionLabel('තවත් භාණ්ඩයක් එකතු කරන්න')
+                            ->reorderable(false)
+                            ->collapsible()
+                            ->itemLabel(fn (array $state): ?string =>
+                                isset($state['item_id'])
+                                    ? Item::find($state['item_id'])?->name
+                                    : 'නව භාණ්ඩය'
+                            )
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -110,32 +130,28 @@ class PledgeResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight(\Filament\Support\Enums\FontWeight::SemiBold)
-                    ->description(fn ($record): string =>
-                        optional($record->item)->name . ' · ' .
-                        number_format($record->pledged_quantity, 2) . ' ' .
-                        optional($record->item)->unit
+                    ->description(fn ($record): string => 
+                        $record->items->map(function ($item) {
+                            $qty = $item->pivot->pledged_quantity 
+                                ? number_format($item->pivot->pledged_quantity, 2) . ' ' . $item->unit
+                                : 'ගෙනෙනවා';
+                            return $item->name . ' · ' . $qty;
+                        })->join(' | ')
                     ),
 
-                // Item badge — visible always
-                TextColumn::make('item.name')
-                    ->label('භාණ්ඩය')
-                    ->searchable()
-                    ->sortable()
+                // Items count badge
+                TextColumn::make('items_count')
+                    ->label('භාණ්ඩ ගණන')
+                    ->counts('items')
                     ->badge()
-                    ->color('info')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->color('info'),
 
-                // Qty — visible always
-                TextColumn::make('pledged_quantity')
-                    ->label('ප්‍රමාණය')
-                    ->getStateUsing(fn ($record) =>
-                        $record->pledged_quantity
-                            ? number_format($record->pledged_quantity, 2) . ' ' . optional($record->item)->unit
-                            : '—'
-                    )
+                // Items list — hidden by default
+                TextColumn::make('items.name')
+                    ->label('භාණ්ඩ')
                     ->badge()
-                    ->color(fn ($record) => $record->pledged_quantity ? 'success' : 'gray')
-                    ->sortable(),
+                    ->separator(', ')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 // Mobile — hidden by default
                 TextColumn::make('donor_mobile')
@@ -153,17 +169,17 @@ class PledgeResource extends Resource
                     ->tooltip(fn ($record) => $record->donor_address ?: '—')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                // Date
-                TextColumn::make('created_at')
+                // Date — shows last activity (updated_at)
+                TextColumn::make('updated_at')
                     ->label('දිනය')
                     ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('item_id')
+                Tables\Filters\SelectFilter::make('item')
                     ->label('භාණ්ඩය අනුව')
-                    ->relationship('item', 'name')
+                    ->relationship('items', 'name')
                     ->searchable()
                     ->preload(),
             ])
@@ -184,7 +200,7 @@ class PledgeResource extends Resource
                         ->label('තෝරාගත් ඒවා මකන්න'),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('updated_at', 'desc')
             ->recordUrl(null)
             ->emptyStateHeading('පොරොන්දු නොමැත')
             ->emptyStateDescription('ආරම්භ කිරීමට නව පොරොන්දුවක් එකතු කරන්න.')

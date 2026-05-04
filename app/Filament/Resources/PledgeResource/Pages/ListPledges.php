@@ -25,6 +25,20 @@ class ListPledges extends ListRecords
     public function updatedMobileSort(): void       { $this->mobilePage = 1; }
     public function updatedMobileFilterItem(): void { $this->mobilePage = 1; }
 
+    /**
+     * When the page mounts (e.g. after redirect from create/edit),
+     * if sort is 'newest' reset to page 1 so the just-saved record is visible.
+     */
+    public function mount(): void
+    {
+        parent::mount();
+
+        // If coming back from create/edit with no explicit page param, go to page 1
+        if (!request()->has('p')) {
+            $this->mobilePage = 1;
+        }
+    }
+
     protected function getHeaderActions(): array
     {
         return [Actions\CreateAction::make()->label('නව පොරොන්දුව')];
@@ -32,7 +46,7 @@ class ListPledges extends ListRecords
 
     public function getViewData(): array
     {
-        $query = Pledge::with('item');
+        $query = Pledge::with('items');
 
         if (filled($this->mobileSearch)) {
             $s = '%' . $this->mobileSearch . '%';
@@ -40,20 +54,20 @@ class ListPledges extends ListRecords
                 ->where('donor_name',    'like', $s)
                 ->orWhere('donor_mobile', 'like', $s)
                 ->orWhere('donor_address','like', $s)
-                ->orWhereHas('item', fn ($iq) => $iq->where('name', 'like', $s))
+                ->orWhereHas('items', fn ($iq) => $iq->where('name', 'like', $s))
             );
         }
 
         if ($this->mobileFilterItem > 0) {
-            $query->where('item_id', $this->mobileFilterItem);
+            $query->whereHas('items', fn ($q) => $q->where('items.id', $this->mobileFilterItem));
         }
 
         $all = match ($this->mobileSort) {
-            'oldest'   => $query->oldest()->get(),
+            'oldest'   => $query->oldest('updated_at')->get(),
             'name'     => $query->get()->sortBy('donor_name')->values(),
-            'qty_desc' => $query->orderByDesc('pledged_quantity')->get(),
-            'qty_asc'  => $query->orderBy('pledged_quantity')->get(),
-            default    => $query->latest()->get(),
+            'qty_desc' => $query->get()->sortByDesc(fn ($p) => $p->items->sum('pivot.pledged_quantity'))->values(),
+            'qty_asc'  => $query->get()->sortBy(fn ($p) => $p->items->sum('pivot.pledged_quantity'))->values(),
+            default    => $query->latest('updated_at')->get(),  // 'newest' = most recently updated first
         };
 
         $total      = $all->count();
