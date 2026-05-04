@@ -281,8 +281,15 @@ html:not(.dark) .dmp-dropdown-search-wrap { background:#ffffff; }
                         <span class="dmp-item-pill">{{ $item?->name ?? '—' }}</span>
                     </div>
                     <div style="display:flex;align-items:baseline;flex-shrink:0;margin-left:.5rem;">
-                        <span class="dmp-qty">{{ number_format($pledge->pledged_quantity, 2) }}</span>
-                        <span class="dmp-qty-unit">{{ $item?->unit }}</span>
+                        @if($pledge->pledged_quantity)
+                            <span class="dmp-qty">{{ number_format($pledge->pledged_quantity, 2) }}</span>
+                            <span class="dmp-qty-unit">{{ $item?->unit }}</span>
+                        @else
+                            <span style="font-size:.72rem;color:#6b7280;background:rgba(255,255,255,.05);
+                                         padding:.2rem .5rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);">
+                                ප්‍රමාණය නොදනී
+                            </span>
+                        @endif
                     </div>
                 </div>
 

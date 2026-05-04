@@ -52,7 +52,9 @@ class ItemResource extends Resource
                             ->numeric()
                             ->minValue(0.01)
                             ->step(0.01)
-                            ->required()
+                            ->nullable()
+                            ->placeholder('ප්‍රමාණය නොදන්නේ නම් හිස් කරන්න')
+                            ->helperText('ප්‍රමාණය නොදන්නේ නම් හිස් කරන්න.')
                             ->suffix(fn ($get) => $get('unit') ?: 'ඒකක')
                             ->columnSpan(2),
 

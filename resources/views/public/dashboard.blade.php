@@ -527,7 +527,9 @@
                         </div>
                     </div>
                     <div style="text-align:right;">
-                        <div class="pub-pledge-qty">{{ number_format($pledge->pledged_quantity,2) }}</div>
+                        <div class="pub-pledge-qty">
+                            {{ $pledge->pledged_quantity ? number_format($pledge->pledged_quantity,2) : '?' }}
+                        </div>
                         <div class="pub-pledge-unit">{{ optional($pledge->item)->unit }}</div>
                     </div>
                 </div>

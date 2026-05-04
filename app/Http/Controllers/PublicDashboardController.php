@@ -26,10 +26,10 @@ class PublicDashboardController extends Controller
 
         $allFiltered = $query->get()->map(function ($item) {
             $pledged  = (float) ($item->pledges_sum_pledged_quantity ?? 0);
-            $required = (float) $item->required_quantity;
+            $required = $item->required_quantity !== null ? (float) $item->required_quantity : null;
             $item->total_pledged_qty = $pledged;
-            $item->remaining_qty     = max(0, $required - $pledged);
-            $item->percentage        = $required > 0 ? min(100, round(($pledged / $required) * 100, 1)) : 0;
+            $item->remaining_qty     = $required !== null ? max(0, $required - $pledged) : 0;
+            $item->percentage        = ($required !== null && $required > 0) ? min(100, round(($pledged / $required) * 100, 1)) : 0;
             return $item;
         });
 
@@ -59,6 +59,8 @@ class PublicDashboardController extends Controller
         $totalPledges  = Pledge::count();
         $totalDonors   = Pledge::whereNotNull('donor_name')->distinct('donor_name')->count('donor_name');
         $fulfilledItems = $allItems->filter(fn ($i) =>
+            $i->required_quantity !== null &&
+            (float) $i->required_quantity > 0 &&
             (float) ($i->pledges_sum_pledged_quantity ?? 0) >= (float) $i->required_quantity
         )->count();
 

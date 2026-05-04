@@ -80,8 +80,10 @@ class PledgeResource extends Resource
                                 $pct       = $record->required_quantity > 0
                                     ? min(100, round(($pledged / $record->required_quantity) * 100))
                                     : 0;
+                                $unknownCount = $record->pledges()->whereNull('pledged_quantity')->count();
                                 $status = $pct >= 100 ? '✅' : ($pct >= 50 ? '⏳' : '⚠️');
-                                return "{$status} {$record->name} — ඉතිරි: {$remaining} {$record->unit} ({$pct}%)";
+                                $extra  = $unknownCount > 0 ? " + {$unknownCount} නොදනී" : '';
+                                return "{$status} {$record->name} — ඉතිරි: {$remaining} {$record->unit} ({$pct}%){$extra}";
                             })
                             ->helperText('භාණ්ඩය සොයා තෝරන්න.')
                             ->columnSpanFull(),
@@ -91,8 +93,8 @@ class PledgeResource extends Resource
                             ->numeric()
                             ->minValue(0.01)
                             ->step(0.01)
-                            ->required()
-                            ->helperText('ලබා දෙන ප්‍රමාණය ඇතුළත් කරන්න.'),
+                            ->nullable()
+                            ->helperText('ප්‍රමාණය නොදන්නේ නම් හිස් කරන්න — "ගෙනෙනවා" ලෙස සටහන් වේ.'),
                     ])
                     ->columns(2),
             ]);
@@ -126,9 +128,14 @@ class PledgeResource extends Resource
                 // Qty — visible always
                 TextColumn::make('pledged_quantity')
                     ->label('ප්‍රමාණය')
-                    ->numeric(decimalPlaces: 2)
-                    ->sortable()
-                    ->suffix(fn ($record) => ' ' . optional($record->item)->unit),
+                    ->getStateUsing(fn ($record) =>
+                        $record->pledged_quantity
+                            ? number_format($record->pledged_quantity, 2) . ' ' . optional($record->item)->unit
+                            : '—'
+                    )
+                    ->badge()
+                    ->color(fn ($record) => $record->pledged_quantity ? 'success' : 'gray')
+                    ->sortable(),
 
                 // Mobile — hidden by default
                 TextColumn::make('donor_mobile')

@@ -38,6 +38,9 @@ class Item extends Model
      */
     public function getRemainingQuantityAttribute(): float
     {
+        if ($this->required_quantity === null) {
+            return 0;
+        }
         return max(0, (float) $this->required_quantity - $this->total_pledged);
     }
 
@@ -46,7 +49,7 @@ class Item extends Model
      */
     public function getFulfillmentPercentageAttribute(): float
     {
-        if ((float) $this->required_quantity <= 0) {
+        if ($this->required_quantity === null || (float) $this->required_quantity <= 0) {
             return 0;
         }
 
