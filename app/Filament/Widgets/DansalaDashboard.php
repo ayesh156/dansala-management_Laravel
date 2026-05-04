@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Item;
 use App\Models\Pledge;
+use App\Models\CashDonation;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -41,6 +42,11 @@ class DansalaDashboard extends BaseWidget
                 ->description('100% සම්පූර්ණ භාණ්ඩ')
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color($fulfilledItems === $totalItems && $totalItems > 0 ? 'success' : 'danger'),
+
+            Stat::make('සල්ලි දායකත්ව', CashDonation::count())
+                ->description('මුළු: රු. ' . number_format((float) CashDonation::sum('amount'), 2))
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color('warning'),
         ];
     }
 }

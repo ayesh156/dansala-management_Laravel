@@ -221,6 +221,14 @@
         .pub-pledge-qty  { font-size:1rem; font-weight:800; color:#10b981; flex-shrink:0; }
         .pub-pledge-unit { font-size:.65rem; color:var(--text-muted); }
 
+        /* Cash card light mode */
+        html:not(.dark) .html-not-dark-cash-card {
+            background:linear-gradient(135deg,#fff7ed,#fffbf5) !important;
+            border-color:rgba(0,0,0,.08) !important;
+            border-left-color:rgba(251,146,60,.6) !important;
+        }
+        html:not(.dark) .html-not-dark-cash-card .pub-glow { opacity:.05; }
+
         /* Footer */
         .pub-footer {
             text-align:center; padding:1.5rem 1rem;
@@ -313,6 +321,22 @@
                 {{ $fulfilledItems }}/{{ $totalItems }}
             </div>
             <div class="pub-stat-lbl">සම්පූර්ණ</div>
+        </div>
+        <div class="pub-stat-card" style="grid-column:span 2;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+                <div>
+                    <div class="pub-stat-val" style="color:#fb923c;text-align:left;">{{ $totalCash }}</div>
+                    <div class="pub-stat-lbl" style="text-align:left;">සල්ලි දායකයන්</div>
+                </div>
+                @if($totalCashAmount > 0)
+                <div style="text-align:right;">
+                    <div style="font-size:1.1rem;font-weight:800;color:#fb923c;line-height:1.1;">
+                        රු. {{ number_format($totalCashAmount, 2) }}
+                    </div>
+                    <div class="pub-stat-lbl">මුළු මුදල</div>
+                </div>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -509,6 +533,143 @@
                 </div>
             @endforeach
         </div>
+    @endif
+
+    {{-- ══ CASH DONATIONS ═════════════════════════════════ --}}
+    <div class="pub-section-title">සල්ලි දායකත්ව</div>
+
+    {{-- Cash search + sort --}}
+    <form method="GET" action="" id="cashForm" style="margin-bottom:.75rem;">
+        {{-- preserve item section params --}}
+        @if(filled($search))<input type="hidden" name="q" value="{{ $search }}">@endif
+        @if($sort !== 'pct_asc')<input type="hidden" name="s" value="{{ $sort }}">@endif
+        @if($filter !== 'all')<input type="hidden" name="f" value="{{ $filter }}">@endif
+
+        <div class="pub-search-wrap" style="margin-bottom:.55rem;">
+            <svg style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;color:var(--text-sub);pointer-events:none;"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
+            <input type="search" name="cq" value="{{ $cashSearch }}"
+                   placeholder="නම, දුරකථනය, සටහන සොයන්න..."
+                   class="pub-search"
+                   onchange="document.getElementById('cashForm').submit()" />
+        </div>
+
+        <div class="pub-chips">
+            <a href="{{ request()->fullUrlWithQuery(['cq'=>$cashSearch,'cs'=>'newest']) }}"
+               class="pub-chip {{ $cashSort==='newest' ? 'active':'' }}">🕐 අලුත්</a>
+            <a href="{{ request()->fullUrlWithQuery(['cq'=>$cashSearch,'cs'=>'oldest']) }}"
+               class="pub-chip {{ $cashSort==='oldest' ? 'active':'' }}">🕰 පැරණි</a>
+            <a href="{{ request()->fullUrlWithQuery(['cq'=>$cashSearch,'cs'=>'name']) }}"
+               class="pub-chip {{ $cashSort==='name' ? 'active':'' }}">A-Z නම</a>
+            <a href="{{ request()->fullUrlWithQuery(['cq'=>$cashSearch,'cs'=>'amount_desc']) }}"
+               class="pub-chip {{ $cashSort==='amount_desc' ? 'active':'' }}">↓ මුදල</a>
+            <a href="{{ request()->fullUrlWithQuery(['cq'=>$cashSearch,'cs'=>'amount_asc']) }}"
+               class="pub-chip {{ $cashSort==='amount_asc' ? 'active':'' }}">↑ මුදල</a>
+        </div>
+    </form>
+
+    <p style="font-size:.72rem;color:var(--text-muted);margin-bottom:.75rem;">
+        {{ $cashDonations->count() }} සල්ලි දායකයන්
+        @if(filled($cashSearch)) · "{{ $cashSearch }}" @endif
+    </p>
+
+    @if($cashDonations->isEmpty())
+        <p style="text-align:center;color:var(--text-muted);padding:1.5rem 0;font-size:.85rem;">
+            @if(filled($cashSearch)) "{{ $cashSearch }}" සඳහා ප්‍රතිඵල නොමැත
+            @else සල්ලි දායකත්ව නොමැත @endif
+        </p>
+    @else
+        <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1rem;">
+            @foreach($cashDonations as $cd)
+            @php $accent = $cd->id % 6; @endphp
+            <div style="
+                position:relative;overflow:hidden;border-radius:20px;
+                border:1px solid rgba(255,255,255,.07);
+                border-left:3px solid rgba(251,146,60,.5);
+                background:linear-gradient(135deg,#1a0a00 0%,#0f172a 70%);
+                transition:transform .15s;
+            " class="html-not-dark-cash-card">
+                {{-- Glow --}}
+                <div style="position:absolute;border-radius:50%;filter:blur(50px);pointer-events:none;
+                            opacity:.12;width:130px;height:130px;right:-30px;top:-30px;
+                            background:#f97316;"></div>
+
+                <div style="position:relative;padding:1rem 1rem .85rem;">
+                    {{-- Row 1: name + amount --}}
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.4rem;">
+                        <div style="min-width:0;flex:1;padding-right:.5rem;">
+                            <p style="font-size:1rem;font-weight:700;color:var(--text-main);line-height:1.2;">
+                                {{ $cd->donor_name }}
+                            </p>
+                            @if($cd->donor_mobile)
+                                <p style="font-size:.72rem;color:var(--text-sub);display:flex;align-items:center;gap:.3rem;margin-top:.2rem;">
+                                    <svg style="width:.7rem;height:.7rem;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                    </svg>
+                                    {{ $cd->donor_mobile }}
+                                </p>
+                            @endif
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;">
+                            @if($cd->amount)
+                                <div style="font-size:1.2rem;font-weight:800;color:#fb923c;line-height:1.1;">
+                                    රු.{{ number_format($cd->amount, 2) }}
+                                </div>
+                            @else
+                                <div style="font-size:.75rem;color:var(--text-muted);background:rgba(255,255,255,.05);
+                                            padding:.2rem .5rem;border-radius:999px;border:1px solid rgba(255,255,255,.08);">
+                                    මුදල නැත
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    @if($cd->donor_address)
+                        <p style="font-size:.7rem;color:var(--text-muted);display:flex;align-items:flex-start;gap:.35rem;margin-bottom:.4rem;">
+                            <svg style="width:.7rem;height:.7rem;flex-shrink:0;margin-top:.1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            {{ $cd->donor_address }}
+                        </p>
+                    @endif
+
+                    @if($cd->note)
+                        <p style="font-size:.7rem;color:var(--text-sub);font-style:italic;
+                                  background:rgba(255,255,255,.04);border-radius:8px;
+                                  padding:.3rem .6rem;margin-bottom:.4rem;">
+                            "{{ $cd->note }}"
+                        </p>
+                    @endif
+
+                    <p style="font-size:.62rem;color:var(--text-muted);margin-top:.3rem;">
+                        {{ $cd->created_at->format('d M Y, h:i A') }}
+                    </p>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        {{-- Cash total --}}
+        @if($totalCashAmount > 0)
+        <div style="
+            background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);
+            border-radius:14px;padding:.75rem 1rem;
+            display:flex;align-items:center;justify-content:space-between;
+            margin-bottom:1rem;
+        ">
+            <span style="font-size:.78rem;color:var(--text-sub);font-weight:600;">
+                මුළු සල්ලි දායකත්ව ({{ $totalCash }})
+            </span>
+            <span style="font-size:1.1rem;font-weight:800;color:#fb923c;">
+                රු. {{ number_format($totalCashAmount, 2) }}
+            </span>
+        </div>
+        @endif
     @endif
 
     {{-- ══ LEGEND ══════════════════════════════════════════ --}}
