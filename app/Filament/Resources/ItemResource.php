@@ -58,25 +58,29 @@ class ItemResource extends Resource
                             ->minValue(0.01)
                             ->step(0.01)
                             ->required()
-                            ->suffix(fn ($get) => $get('unit') ?: 'ඒකක'),
+                            ->suffix(fn ($get) => $get('unit') ?: 'ඒකක')
+                            ->columnSpan(2),
 
                         Forms\Components\Select::make('unit')
                             ->label('ඒකකය')
                             ->options([
-                                'kg'      => 'කිලෝග්‍රෑම් (kg)',
-                                'g'       => 'ග්‍රෑම් (g)',
-                                'liters'  => 'ලීටර්',
-                                'ml'      => 'මිලිලීටර් (ml)',
-                                'packets' => 'පැකට්',
-                                'boxes'   => 'පෙට්ටි',
-                                'pieces'  => 'කෑලි',
-                                'bags'    => 'බෑග්',
-                                'cans'    => 'ටින්',
-                                'bottles' => 'බෝතල්',
+                                'kg'       => 'කිලෝග්‍රෑම් (kg)',
+                                'g'        => 'ග්‍රෑම් (g)',
+                                'L'        => 'ලීටර් (L)',
+                                'ml'       => 'මිලිලීටර් (ml)',
+                                'packets'  => 'පැකට්',
+                                'boxes'    => 'පෙට්ටි',
+                                'pieces'   => 'කෑලි',
+                                'bags'     => 'බෑග්',
+                                'cans'     => 'ටින්',
+                                'bottles'  => 'බෝතල්',
+                                'numbers'  => 'ගණන (numbers)',
+                                'cylinders'=> 'සිලින්ඩර',
                             ])
                             ->searchable()
                             ->required()
-                            ->native(false),
+                            ->native(false)
+                            ->columnSpan(2),
                     ])
                     ->columns(2),
             ]);
@@ -114,6 +118,7 @@ class ItemResource extends Resource
                     ->label('ප්‍රගතිය')
                     ->getStateUsing(fn ($record) => $record->fulfillment_percentage . '%')
                     ->badge()
+                    ->sortable()
                     ->color(fn ($record) => match (true) {
                         $record->fulfillment_percentage >= 100 => 'success',
                         $record->fulfillment_percentage >= 50  => 'warning',

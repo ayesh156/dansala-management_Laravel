@@ -40,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
                 'warning'  => Color::Amber,
                 'danger'   => Color::Rose,
             ])
-            ->brandName('දන්සල කළමනාකරණය')
+            ->brandName('දන්සල් කළමනාකරණ පද්ධතිය')
             ->brandLogo(null)
             ->favicon(asset('logo.jpg'))
             ->renderHook(

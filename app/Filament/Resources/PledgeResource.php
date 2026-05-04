@@ -79,9 +79,15 @@ class PledgeResource extends Resource
                             ->preload()
                             ->required()
                             ->native(false)
-                            ->getOptionLabelFromRecordUsing(
-                                fn (Item $record) => "{$record->name} ({$record->required_quantity} {$record->unit})"
-                            )
+                            ->getOptionLabelFromRecordUsing(function (Item $record) {
+                                $pledged   = (float) $record->pledges()->sum('pledged_quantity');
+                                $remaining = max(0, (float) $record->required_quantity - $pledged);
+                                $pct       = $record->required_quantity > 0
+                                    ? min(100, round(($pledged / $record->required_quantity) * 100))
+                                    : 0;
+                                $status = $pct >= 100 ? '✅' : ($pct >= 50 ? '⏳' : '⚠️');
+                                return "{$status} {$record->name} — ඉතිරි: {$remaining} {$record->unit} ({$pct}%)";
+                            })
                             ->helperText('භාණ්ඩය සොයා තෝරන්න.')
                             ->columnSpanFull(),
 
@@ -177,6 +183,7 @@ class PledgeResource extends Resource
                 ]),
             ])
             ->defaultSort('created_at', 'desc')
+            ->recordUrl(null)
             ->emptyStateHeading('පොරොන්දු නොමැත')
             ->emptyStateDescription('ආරම්භ කිරීමට නව පොරොන්දුවක් එකතු කරන්න.')
             ->emptyStateIcon('heroicon-o-heart');

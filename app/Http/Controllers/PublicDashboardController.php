@@ -4,46 +4,70 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Pledge;
+use Illuminate\Http\Request;
 
 class PublicDashboardController extends Controller
 {
-    public function index()
+    const PER_PAGE = 6;
+
+    public function index(Request $request)
     {
-        $items = Item::withSum('pledges', 'pledged_quantity')
-            ->orderBy('name')
-            ->get()
-            ->map(function ($item) {
-                $totalPledged = (float) ($item->pledges_sum_pledged_quantity ?? 0);
-                $required     = (float) $item->required_quantity;
+        $search = $request->get('q', '');
+        $sort   = $request->get('s', 'pct_asc');
+        $filter = $request->get('f', 'all');
+        $page   = max(1, (int) $request->get('page', 1));
 
-                $item->total_pledged_qty = $totalPledged;
-                $item->remaining_qty     = max(0, $required - $totalPledged);
-                $item->percentage        = $required > 0
-                    ? min(100, round(($totalPledged / $required) * 100, 1))
-                    : 0;
+        $query = Item::withSum('pledges', 'pledged_quantity');
 
-                return $item;
+        if (filled($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $allFiltered = $query->get()->map(function ($item) {
+            $pledged  = (float) ($item->pledges_sum_pledged_quantity ?? 0);
+            $required = (float) $item->required_quantity;
+            $item->total_pledged_qty = $pledged;
+            $item->remaining_qty     = max(0, $required - $pledged);
+            $item->percentage        = $required > 0 ? min(100, round(($pledged / $required) * 100, 1)) : 0;
+            return $item;
+        });
+
+        if ($filter !== 'all') {
+            $allFiltered = $allFiltered->filter(fn ($i) => match ($filter) {
+                'red'   => $i->percentage < 50,
+                'amber' => $i->percentage >= 50 && $i->percentage < 100,
+                'green' => $i->percentage >= 100,
+                default => true,
             });
+        }
 
-        $totalItems    = $items->count();
+        $allFiltered = match ($sort) {
+            'pct_desc' => $allFiltered->sortByDesc('percentage')->values(),
+            'name'     => $allFiltered->sortBy('name')->values(),
+            default    => $allFiltered->sortBy('percentage')->values(),
+        };
+
+        $totalCount = $allFiltered->count();
+        $totalPages = max(1, (int) ceil($totalCount / self::PER_PAGE));
+        $page       = min($page, $totalPages);
+        $items      = $allFiltered->slice(($page - 1) * self::PER_PAGE, self::PER_PAGE)->values();
+
+        // Stats always from full dataset
+        $allItems      = Item::withSum('pledges', 'pledged_quantity')->get();
+        $totalItems    = $allItems->count();
         $totalPledges  = Pledge::count();
-        $totalDonors   = Pledge::whereNotNull('donor_name')
-                            ->distinct('donor_name')
-                            ->count('donor_name');
-        $fulfilledItems = $items->filter(fn ($i) => $i->percentage >= 100)->count();
+        $totalDonors   = Pledge::whereNotNull('donor_name')->distinct('donor_name')->count('donor_name');
+        $fulfilledItems = $allItems->filter(function ($item) {
+            return (float) ($item->pledges_sum_pledged_quantity ?? 0) >= (float) $item->required_quantity;
+        })->count();
 
-        $recentPledges = Pledge::with('item')
-            ->latest()
-            ->limit(20)
-            ->get();
+        $recentPledges = Pledge::with('item')->latest()->limit(20)->get();
 
         return view('public.dashboard', compact(
-            'items',
-            'totalItems',
-            'totalPledges',
-            'totalDonors',
-            'fulfilledItems',
-            'recentPledges'
+            'items', 'totalItems', 'totalPledges',
+            'totalDonors', 'fulfilledItems', 'recentPledges',
+            'search', 'sort', 'filter',
+            'page', 'totalPages', 'totalCount'
         ));
     }
 }

@@ -44,6 +44,24 @@
                 x-show="$store.sidebar.isOpen"
                 class="fi-topbar-close-sidebar-btn lg:hidden"
             />
+
+            {{-- Tracker icon — hamburger ට right ට --}}
+            <a href="{{ url('/') }}"
+               title="ප්‍රගති නිරීක්ෂණය"
+               style="
+                   display:inline-flex;align-items:center;justify-content:center;
+                   width:1.9rem;height:1.9rem;border-radius:50%;flex-shrink:0;
+                   background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);
+                   color:#10b981;text-decoration:none;transition:all .2s;
+               "
+               onmouseover="this.style.background='rgba(16,185,129,.2)';this.style.borderColor='rgba(16,185,129,.5)'"
+               onmouseout="this.style.background='rgba(16,185,129,.1)';this.style.borderColor='rgba(16,185,129,.3)'"
+            >
+                <svg style="width:.85rem;height:.85rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+            </a>
         @endif
 
         @if (filament()->hasTopNavigation() || (! filament()->hasNavigation()))
@@ -56,6 +74,9 @@
                     <x-filament-panels::logo />
                 @endif
             </div>
+
+            {{-- Tracker shortcut — desktop, after logo --}}
+            {{-- removed --}}
 
             @if (filament()->hasTenancy() && filament()->hasTenantMenu())
                 <x-filament-panels::tenant-menu class="hidden lg:block" />

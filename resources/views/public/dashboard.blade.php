@@ -1,196 +1,544 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="si" id="htmlRoot">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dansala – Donation Progress</title>
+    <title>දන්සල් කළමනාකරණ පද්ධතිය</title>
+
+    {{-- Open Graph / Social Share --}}
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="දන්සල් කළමනාකරණ පද්ධතිය" />
+    <meta property="og:description" content="මහමෙව්නාව භාවනා අසපුවේ දන්සල් දායකත්ව ප්‍රගති නිරීක්ෂණය" />
+    <meta property="og:image"       content="{{ asset('logo.jpg') }}" />
+    <meta property="og:url"         content="{{ url('/') }}" />
+    <meta property="og:site_name"   content="දන්සල් කළමනාකරණ පද්ධතිය" />
+    <meta name="twitter:card"       content="summary" />
+    <meta name="twitter:title"      content="දන්සල් කළමනාකරණ පද්ධතිය" />
+    <meta name="twitter:description" content="මහමෙව්නාව භාවනා අසපුවේ දන්සල් දායකත්ව ප්‍රගති නිරීක්ෂණය" />
+    <meta name="twitter:image"      content="{{ asset('logo.jpg') }}" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Apply saved theme before render to avoid flash
+        (function() {
+            const t = localStorage.getItem('pub-theme') || 'dark';
+            document.documentElement.classList.toggle('dark', t === 'dark');
+        })();
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .progress-bar { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: 'Noto Sans Sinhala', 'Inter', sans-serif; transition: background .3s, color .3s; }
+        .progress-bar { transition: width 0.9s cubic-bezier(0.4,0,0.2,1); }
+
+        /* ── DARK theme (default) ── */
+        :root {
+            --bg:        #030712;
+            --nav-bg:    rgba(15,23,42,0.92);
+            --nav-border:rgba(255,255,255,0.07);
+            --card-bg:   rgba(255,255,255,.04);
+            --card-border:rgba(255,255,255,.07);
+            --text-main: #f9fafb;
+            --text-sub:  #6b7280;
+            --text-muted:#4b5563;
+            --input-bg:  #111827;
+            --input-border:#374151;
+            --chip-bg:   rgba(255,255,255,.05);
+            --chip-border:rgba(255,255,255,.1);
+            --chip-color:#9ca3af;
+            --divider:   rgba(255,255,255,.06);
+            --mini-bg:   rgba(255,255,255,.04);
+            --mini-border:rgba(255,255,255,.06);
+            --pledge-bg: rgba(255,255,255,.03);
+            --pledge-border:rgba(255,255,255,.06);
+        }
+
+        /* ── LIGHT theme ── */
+        html:not(.dark) {
+            --bg:        #f0fdf4;
+            --nav-bg:    rgba(255,255,255,0.95);
+            --nav-border:rgba(0,0,0,0.08);
+            --card-bg:   #ffffff;
+            --card-border:rgba(0,0,0,0.08);
+            --text-main: #111827;
+            --text-sub:  #6b7280;
+            --text-muted:#9ca3af;
+            --input-bg:  #f9fafb;
+            --input-border:#d1d5db;
+            --chip-bg:   rgba(0,0,0,.04);
+            --chip-border:rgba(0,0,0,.1);
+            --chip-color:#374151;
+            --divider:   rgba(0,0,0,.07);
+            --mini-bg:   #f9fafb;
+            --mini-border:rgba(0,0,0,.07);
+            --pledge-bg: #ffffff;
+            --pledge-border:rgba(0,0,0,.07);
+        }
+
+        body { background: var(--bg); color: var(--text-main); }
+
+        /* Navbar */
+        .pub-nav {
+            position:sticky; top:0; z-index:50;
+            background: var(--nav-bg);
+            backdrop-filter:blur(16px);
+            border-bottom:1px solid var(--nav-border);
+        }
+        .pub-nav-inner {
+            max-width:900px; margin:0 auto;
+            padding:.55rem 1rem;
+            display:flex; align-items:center; gap:.6rem;
+        }
+
+        /* Logo pill */
+        .pub-logo-pill {
+            display:flex; align-items:center; gap:.45rem; flex-shrink:0;
+        }
+        .pub-logo-pill img {
+            height:1.85rem; width:1.85rem; border-radius:50%; object-fit:cover;
+            border:2px solid rgba(16,185,129,.5);
+            box-shadow:0 0 10px rgba(16,185,129,.25);
+        }
+
+        /* Brand text — single line, truncate */
+        .pub-brand-col { min-width:0; flex:1; }
+        .pub-brand-text {
+            font-size:.82rem; font-weight:700; color:var(--text-main);
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+            line-height:1.2;
+        }
+        .pub-brand-sub { font-size:.6rem; color:var(--text-sub); white-space:nowrap; }
+
+        /* Right side — time badge + toggle */
+        .pub-nav-right { display:flex; align-items:center; gap:.4rem; flex-shrink:0; }
+        .pub-time-badge {
+            display:flex; align-items:center; gap:.3rem;
+            background:var(--chip-bg); border:1px solid var(--chip-border);
+            border-radius:999px; padding:.2rem .6rem;
+            font-size:.62rem; color:var(--text-sub); white-space:nowrap;
+        }
+        .pub-time-badge svg { flex-shrink:0; opacity:.6; }
+        .pub-time-badge strong { color:var(--text-main); font-weight:600; }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            width:1.85rem; height:1.85rem; border-radius:50%; flex-shrink:0;
+            background: var(--chip-bg); border:1px solid var(--chip-border);
+            color: var(--chip-color); cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            transition: all .2s; font-size:.85rem;
+        }
+        .theme-toggle:hover { background: rgba(16,185,129,.15); border-color:rgba(16,185,129,.4); color:#10b981; }
+
+        /* Stats */
+        .pub-stat-card {
+            background: var(--card-bg);
+            border:1px solid var(--card-border);
+            border-radius:16px; padding:1rem; text-align:center;
+        }
+        .pub-stat-val { font-size:1.6rem; font-weight:800; line-height:1.1; }
+        .pub-stat-lbl { font-size:.7rem; color:var(--text-sub); margin-top:.3rem; }
+
+        /* Search */
+        .pub-search-wrap { position:relative; }
+        .pub-search {
+            width:100%; padding:.65rem 1rem .65rem 2.6rem;
+            background: var(--input-bg); border:1px solid var(--input-border); border-radius:14px;
+            color: var(--text-main); font-size:.875rem; outline:none;
+            transition:border-color .2s, box-shadow .2s;
+        }
+        .pub-search::placeholder { color:var(--text-sub); }
+        .pub-search:focus { border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.15); }
+
+        /* Chips */
+        .pub-chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.6rem; }
+        .pub-chip {
+            padding:.3rem .7rem; border-radius:999px; font-size:.72rem; font-weight:600;
+            border:1px solid var(--chip-border); background: var(--chip-bg);
+            color: var(--chip-color); cursor:pointer; text-decoration:none; white-space:nowrap;
+            transition:all .15s;
+        }
+        .pub-chip:hover { background:rgba(16,185,129,.1); color:#10b981; border-color:rgba(16,185,129,.3); }
+        .pub-chip.active { background:rgba(16,185,129,.15); border-color:rgba(16,185,129,.4); color:#059669; }
+        .pub-chip.active-red   { background:rgba(239,68,68,.1);  border-color:rgba(239,68,68,.4);  color:#dc2626; }
+        .pub-chip.active-amber { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.4); color:#d97706; }
+        .pub-chip.active-green { background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4); color:#059669; }
+        .pub-divider-v { width:1px; background:var(--divider); align-self:stretch; margin:0 .1rem; }
+
+        /* Item cards — dark */
+        .pub-item-card {
+            position:relative; overflow:hidden; border-radius:20px;
+            border:1px solid var(--card-border); padding:1.1rem; transition:transform .15s;
+        }
+        .dark .pub-card--green { background:linear-gradient(135deg,#052e16 0%,#0f172a 65%); }
+        .dark .pub-card--amber { background:linear-gradient(135deg,#1c1003 0%,#0f172a 65%); }
+        .dark .pub-card--red   { background:linear-gradient(135deg,#1c0505 0%,#0f172a 65%); }
+        html:not(.dark) .pub-card--green { background:linear-gradient(135deg,#ecfdf5,#f0fdf4); border-color:rgba(16,185,129,.2); }
+        html:not(.dark) .pub-card--amber { background:linear-gradient(135deg,#fffbeb,#fefce8); border-color:rgba(245,158,11,.2); }
+        html:not(.dark) .pub-card--red   { background:linear-gradient(135deg,#fff1f2,#fff5f5); border-color:rgba(239,68,68,.2); }
+
+        .pub-glow { position:absolute; border-radius:50%; filter:blur(45px); pointer-events:none; opacity:.16; }
+        html:not(.dark) .pub-glow { opacity:.08; }
+
+        .pub-badge {
+            display:inline-flex; align-items:center; gap:.3rem;
+            font-size:.65rem; font-weight:600; padding:.2rem .55rem; border-radius:999px;
+        }
+        .pub-badge--green { background:rgba(16,185,129,.15); color:#059669; border:1px solid rgba(16,185,129,.3); }
+        .pub-badge--amber { background:rgba(245,158,11,.15);  color:#d97706; border:1px solid rgba(245,158,11,.3); }
+        .pub-badge--red   { background:rgba(239,68,68,.15);   color:#dc2626; border:1px solid rgba(239,68,68,.3); }
+        .dark .pub-badge--green { color:#6ee7b7; }
+        .dark .pub-badge--amber { color:#fcd34d; }
+        .dark .pub-badge--red   { color:#fca5a5; }
+
+        .pub-prog-track { height:5px; border-radius:999px; background:var(--mini-border); overflow:hidden; margin:.65rem 0 .85rem; }
+        .pub-prog-fill  { height:100%; border-radius:999px; }
+        .pub-fill--green { background:linear-gradient(90deg,#059669,#34d399); }
+        .pub-fill--amber { background:linear-gradient(90deg,#d97706,#fbbf24); }
+        .pub-fill--red   { background:linear-gradient(90deg,#dc2626,#f87171); }
+
+        .pub-stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; }
+        .pub-mini-stat  { background:var(--mini-bg); border:1px solid var(--mini-border); border-radius:12px; padding:.5rem .25rem; text-align:center; }
+        .pub-mini-lbl   { font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-sub); margin-bottom:.2rem; }
+        .pub-mini-val   { font-size:.88rem; font-weight:700; line-height:1.1; }
+        .pub-mini-unit  { font-size:.6rem; color:var(--text-muted); margin-top:.1rem; }
+
+        /* Section title */
+        .pub-section-title {
+            display:flex; align-items:center; gap:.75rem;
+            font-size:.7rem; font-weight:700; color:var(--text-muted);
+            text-transform:uppercase; letter-spacing:.1em; margin:1.5rem 0 1rem;
+        }
+        .pub-section-title::before, .pub-section-title::after {
+            content:''; flex:1; height:1px; background:var(--divider);
+        }
+
+        /* Pledge cards */
+        .pub-pledge-card {
+            background:var(--pledge-bg); border:1px solid var(--pledge-border);
+            border-radius:16px; padding:.85rem 1rem;
+            display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+        }
+        .pub-pledge-name { font-size:.9rem; font-weight:700; color:var(--text-main); }
+        .pub-pledge-item { font-size:.72rem; color:var(--text-sub); margin-top:.15rem; }
+        .pub-pledge-qty  { font-size:1rem; font-weight:800; color:#10b981; flex-shrink:0; }
+        .pub-pledge-unit { font-size:.65rem; color:var(--text-muted); }
+
+        /* Footer */
+        .pub-footer {
+            text-align:center; padding:1.5rem 1rem;
+            border-top:1px solid var(--divider);
+            font-size:.75rem; color:var(--text-muted); margin-top:2rem;
+        }
+        .pub-footer a { color:#10b981; text-decoration:none; font-weight:600; }
+        .pub-footer a:hover { color:#059669; }
+
+        /* Item name color */
+        .pub-item-name { color: var(--text-main); }
     </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen">
+<body>
 
-    {{-- Header --}}
-    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-10">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div>
-                <h1 class="text-lg font-bold text-emerald-400 leading-tight">🕌 Dansala</h1>
-                <p class="text-xs text-gray-400">Donation Progress Tracker</p>
-            </div>
-            <div class="text-right">
-                <p class="text-xs text-gray-500">Last updated</p>
-                <p class="text-xs font-medium text-gray-300">{{ now()->format('d M Y, h:i A') }}</p>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
-
-        {{-- Summary Stats --}}
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800 text-center">
-                <p class="text-2xl font-bold text-emerald-400">{{ $totalItems }}</p>
-                <p class="text-xs text-gray-400 mt-1">Total Items</p>
-            </div>
-            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800 text-center">
-                <p class="text-2xl font-bold text-sky-400">{{ $totalPledges }}</p>
-                <p class="text-xs text-gray-400 mt-1">Total Pledges</p>
-            </div>
-            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800 text-center">
-                <p class="text-2xl font-bold text-amber-400">{{ $totalDonors }}</p>
-                <p class="text-xs text-gray-400 mt-1">Donors</p>
-            </div>
-            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800 text-center">
-                <p class="text-2xl font-bold {{ $fulfilledItems === $totalItems && $totalItems > 0 ? 'text-emerald-400' : 'text-rose-400' }}">
-                    {{ $fulfilledItems }}/{{ $totalItems }}
-                </p>
-                <p class="text-xs text-gray-400 mt-1">Fulfilled</p>
-            </div>
+{{-- ══ NAVBAR ══════════════════════════════════════════════ --}}
+<nav class="pub-nav">
+    <div class="pub-nav-inner">
+        {{-- Logo --}}
+        <div class="pub-logo-pill">
+            <img src="{{ asset('logo.jpg') }}" alt="logo" />
         </div>
 
-        {{-- Section Title --}}
-        <div class="flex items-center gap-2">
-            <div class="h-px flex-1 bg-gray-800"></div>
-            <span class="text-xs font-semibold text-gray-500 uppercase tracking-widest">Item Progress</span>
-            <div class="h-px flex-1 bg-gray-800"></div>
+        {{-- Brand text --}}
+        <div class="pub-brand-col">
+            <div class="pub-brand-text">දන්සල් කළමනාකරණ පද්ධතිය</div>
+            <div class="pub-brand-sub">දායකත්ව ප්‍රගති නිරීක්ෂණය</div>
         </div>
 
-        {{-- Item Cards --}}
-        @if ($items->isEmpty())
-            <div class="text-center py-16 text-gray-500">
-                <p class="text-4xl mb-3">📦</p>
-                <p class="font-medium">No items found.</p>
+        {{-- Right: time badge + admin link + theme toggle --}}
+        <div class="pub-nav-right">
+            <div class="pub-time-badge">
+                <svg style="width:.65rem;height:.65rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <strong>{{ now()->format('d M, h:i A') }}</strong>
             </div>
-        @else
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                @foreach ($items as $item)
-                    @php
-                        $pct = $item->percentage;
-                        if ($pct >= 100) {
-                            $bar    = 'bg-emerald-500';
-                            $text   = 'text-emerald-400';
-                            $badge  = 'bg-emerald-900/50 text-emerald-300 border border-emerald-700/50';
-                            $label  = '✓ Fulfilled';
-                            $card   = 'border-emerald-800/40';
-                        } elseif ($pct >= 50) {
-                            $bar    = 'bg-amber-500';
-                            $text   = 'text-amber-400';
-                            $badge  = 'bg-amber-900/50 text-amber-300 border border-amber-700/50';
-                            $label  = '⏳ In Progress';
-                            $card   = 'border-amber-800/40';
-                        } else {
-                            $bar    = 'bg-rose-500';
-                            $text   = 'text-rose-400';
-                            $badge  = 'bg-rose-900/50 text-rose-300 border border-rose-700/50';
-                            $label  = '⚠ Needs Donations';
-                            $card   = 'border-rose-800/40';
-                        }
-                    @endphp
+            <a href="{{ url('/admin') }}"
+               title="පරිපාලන පද්ධතිය"
+               style="
+                   display:inline-flex;align-items:center;justify-content:center;
+                   width:1.85rem;height:1.85rem;border-radius:50%;flex-shrink:0;
+                   background:var(--chip-bg);border:1px solid var(--chip-border);
+                   color:var(--chip-color);text-decoration:none;
+                   transition:all .2s;
+               "
+               onmouseover="this.style.background='rgba(99,102,241,.15)';this.style.borderColor='rgba(99,102,241,.4)';this.style.color='#818cf8'"
+               onmouseout="this.style.background='var(--chip-bg)';this.style.borderColor='var(--chip-border)';this.style.color='var(--chip-color)'"
+            >
+                <svg style="width:.85rem;height:.85rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </a>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Theme">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </div>
+    </div>
+</nav>
 
-                    <div class="bg-gray-900 rounded-xl border {{ $card }} p-5">
-                        {{-- Card Header --}}
-                        <div class="flex items-start justify-between mb-3">
-                            <div>
-                                <h3 class="font-semibold text-white text-base">{{ $item->name }}</h3>
-                                <span class="inline-block mt-1 text-xs px-2 py-0.5 rounded-full {{ $badge }}">
-                                    {{ $label }}
-                                </span>
-                            </div>
-                            <span class="text-2xl font-bold {{ $text }}">{{ $pct }}%</span>
+<main style="max-width:900px;margin:0 auto;padding:1.25rem 1rem 2rem;">
+
+    {{-- ══ STATS ══════════════════════════════════════════ --}}
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.5rem;">
+        <div class="pub-stat-card">
+            <div class="pub-stat-val" style="color:#10b981;">{{ $totalItems }}</div>
+            <div class="pub-stat-lbl">මුළු භාණ්ඩ</div>
+        </div>
+        <div class="pub-stat-card">
+            <div class="pub-stat-val" style="color:#38bdf8;">{{ $totalPledges }}</div>
+            <div class="pub-stat-lbl">මුළු පොරොන්දු</div>
+        </div>
+        <div class="pub-stat-card">
+            <div class="pub-stat-val" style="color:#fbbf24;">{{ $totalDonors }}</div>
+            <div class="pub-stat-lbl">දායකයන්</div>
+        </div>
+        <div class="pub-stat-card">
+            <div class="pub-stat-val" style="color:{{ $fulfilledItems === $totalItems && $totalItems > 0 ? '#10b981' : '#f87171' }};">
+                {{ $fulfilledItems }}/{{ $totalItems }}
+            </div>
+            <div class="pub-stat-lbl">සම්පූර්ණ</div>
+        </div>
+    </div>
+
+    {{-- ══ SEARCH + SORT + FILTER ══════════════════════════ --}}
+    <form method="GET" action="" id="filterForm">
+        <div class="pub-search-wrap" style="margin-bottom:.6rem;">
+            <svg style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;color:#6b7280;pointer-events:none;"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
+            <input type="search" name="q" value="{{ $search }}"
+                   placeholder="භාණ්ඩ සොයන්න..."
+                   class="pub-search"
+                   onchange="document.getElementById('filterForm').submit()" />
+        </div>
+
+        {{-- Sort chips --}}
+        <div class="pub-chips">
+            <a href="{{ request()->fullUrlWithQuery(['s'=>'pct_asc','f'=>$filter,'q'=>$search]) }}"
+               class="pub-chip {{ $sort==='pct_asc' ? 'active' : '' }}">↑ අඩු fill</a>
+            <a href="{{ request()->fullUrlWithQuery(['s'=>'pct_desc','f'=>$filter,'q'=>$search]) }}"
+               class="pub-chip {{ $sort==='pct_desc' ? 'active' : '' }}">↓ වැඩි fill</a>
+            <a href="{{ request()->fullUrlWithQuery(['s'=>'name','f'=>$filter,'q'=>$search]) }}"
+               class="pub-chip {{ $sort==='name' ? 'active' : '' }}">A-Z නම</a>
+
+            <div class="pub-divider-v"></div>
+
+            <a href="{{ request()->fullUrlWithQuery(['f'=>'all','s'=>$sort,'q'=>$search]) }}"
+               class="pub-chip {{ $filter==='all' ? 'active' : '' }}">සියල්ල</a>
+            <a href="{{ request()->fullUrlWithQuery(['f'=>'red','s'=>$sort,'q'=>$search]) }}"
+               class="pub-chip {{ $filter==='red' ? 'active-red' : '' }}">⚠ අවශ්‍ය</a>
+            <a href="{{ request()->fullUrlWithQuery(['f'=>'amber','s'=>$sort,'q'=>$search]) }}"
+               class="pub-chip {{ $filter==='amber' ? 'active-amber' : '' }}">⏳ ක්‍රියාත්මක</a>
+            <a href="{{ request()->fullUrlWithQuery(['f'=>'green','s'=>$sort,'q'=>$search]) }}"
+               class="pub-chip {{ $filter==='green' ? 'active-green' : '' }}">✓ සම්පූර්ණ</a>
+        </div>
+    </form>
+
+    <p style="font-size:.72rem;color:#6b7280;margin:.6rem 0 1rem;">
+        {{ $totalCount }} භාණ්ඩ · පිටුව {{ $page }}/{{ $totalPages }}
+        @if(filled($search)) · "{{ $search }}" @endif
+    </p>
+
+    {{-- ══ ITEM PROGRESS SECTION ══════════════════════════ --}}
+    <div class="pub-section-title">භාණ්ඩ ප්‍රගතිය</div>
+
+    @if($items->isEmpty())
+        <div style="text-align:center;padding:3rem 1rem;color:#6b7280;">
+            <div style="font-size:2.5rem;margin-bottom:.5rem;">📦</div>
+            <p style="font-weight:600;color:#9ca3af;">භාණ්ඩ නොමැත</p>
+            @if(filled($search))<p style="font-size:.8rem;margin-top:.25rem;">"{{ $search }}" සඳහා ප්‍රතිඵල නොමැත</p>@endif
+        </div>
+    @else
+        <div style="display:grid;grid-template-columns:1fr;gap:.85rem;">
+            @foreach ($items as $item)
+                @php
+                    $pct = $item->percentage;
+                    if ($pct >= 100) {
+                        $cardCls='pub-card--green'; $glowClr='#10b981'; $fillCls='pub-fill--green';
+                        $badgeCls='pub-badge--green'; $pctClr='#34d399'; $remClr='#34d399';
+                        $icon='✓'; $label='සම්පූර්ණයි';
+                    } elseif ($pct >= 50) {
+                        $cardCls='pub-card--amber'; $glowClr='#f59e0b'; $fillCls='pub-fill--amber';
+                        $badgeCls='pub-badge--amber'; $pctClr='#fbbf24'; $remClr='#fbbf24';
+                        $icon='⏳'; $label='ක්‍රියාත්මකයි';
+                    } else {
+                        $cardCls='pub-card--red'; $glowClr='#ef4444'; $fillCls='pub-fill--red';
+                        $badgeCls='pub-badge--red'; $pctClr='#f87171'; $remClr='#f87171';
+                        $icon='⚠'; $label='දායකත්ව අවශ්‍යයි';
+                    }
+                @endphp
+
+                <div class="pub-item-card {{ $cardCls }}">
+                    <div class="pub-glow" style="width:130px;height:130px;right:-30px;top:-30px;background:{{ $glowClr }};"></div>
+
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.35rem;">
+                        <div style="min-width:0;flex:1;padding-right:.5rem;">
+                            <p class="pub-item-name" style="font-size:1rem;font-weight:700;line-height:1.3;">{{ $item->name }}</p>
+                            <span class="pub-badge {{ $badgeCls }}" style="margin-top:.3rem;">{{ $icon }} {{ $label }}</span>
                         </div>
+                        <span style="font-size:1.4rem;font-weight:800;color:{{ $pctClr }};flex-shrink:0;">{{ $pct }}%</span>
+                    </div>
 
-                        {{-- Progress Bar --}}
-                        <div class="h-2 w-full bg-gray-800 rounded-full overflow-hidden mb-4">
-                            <div class="h-2 rounded-full progress-bar {{ $bar }}" style="width: {{ $pct }}%"></div>
+                    <div class="pub-prog-track">
+                        <div class="pub-prog-fill progress-bar {{ $fillCls }}" style="width:{{ $pct }}%"></div>
+                    </div>
+
+                    <div class="pub-stats-grid">
+                        <div class="pub-mini-stat">
+                            <div class="pub-mini-lbl">අවශ්‍ය</div>
+                            <div class="pub-mini-val" style="color:#e5e7eb;">{{ number_format($item->required_quantity,1) }}</div>
+                            <div class="pub-mini-unit">{{ $item->unit }}</div>
                         </div>
-
-                        {{-- Stats --}}
-                        <div class="grid grid-cols-3 gap-2 text-center">
-                            <div class="bg-gray-800/60 rounded-lg py-2 px-1">
-                                <p class="text-xs text-gray-500 mb-0.5">Required</p>
-                                <p class="text-sm font-semibold text-gray-200">{{ number_format($item->required_quantity, 2) }}</p>
-                                <p class="text-xs text-gray-600">{{ $item->unit }}</p>
-                            </div>
-                            <div class="bg-gray-800/60 rounded-lg py-2 px-1">
-                                <p class="text-xs text-gray-500 mb-0.5">Received</p>
-                                <p class="text-sm font-semibold text-emerald-400">{{ number_format($item->total_pledged_qty, 2) }}</p>
-                                <p class="text-xs text-gray-600">{{ $item->unit }}</p>
-                            </div>
-                            <div class="bg-gray-800/60 rounded-lg py-2 px-1">
-                                <p class="text-xs text-gray-500 mb-0.5">Remaining</p>
-                                <p class="text-sm font-semibold {{ $item->remaining_qty <= 0 ? 'text-emerald-400' : 'text-rose-400' }}">
-                                    {{ number_format($item->remaining_qty, 2) }}
-                                </p>
-                                <p class="text-xs text-gray-600">{{ $item->unit }}</p>
-                            </div>
+                        <div class="pub-mini-stat">
+                            <div class="pub-mini-lbl">ලැබුණු</div>
+                            <div class="pub-mini-val" style="color:#34d399;">{{ number_format($item->total_pledged_qty,1) }}</div>
+                            <div class="pub-mini-unit">{{ $item->unit }}</div>
+                        </div>
+                        <div class="pub-mini-stat">
+                            <div class="pub-mini-lbl">ඉතිරි</div>
+                            <div class="pub-mini-val" style="color:{{ $remClr }};">{{ number_format($item->remaining_qty,1) }}</div>
+                            <div class="pub-mini-unit">{{ $item->unit }}</div>
                         </div>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
+    {{-- ══ PAGINATION ══════════════════════════════════════ --}}
+    @if($totalPages > 1)
+    @php
+        $pStart = max(1, $page - 2);
+        $pEnd   = min($totalPages, $page + 2);
+        // Build URL helper
+        $baseParams = array_filter(['q'=>$search,'s'=>$sort,'f'=>$filter], fn($v)=>$v!==''&&$v!=='all'&&$v!=='pct_asc');
+    @endphp
+    <div style="display:flex;align-items:center;justify-content:center;gap:.4rem;margin:1.25rem 0 .5rem;flex-wrap:wrap;">
+
+        {{-- Prev --}}
+        @if($page > 1)
+        <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['page'=>$page-1])) }}"
+           style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                  background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text-main);
+                  text-decoration:none;font-size:.9rem;transition:all .15s;">‹</a>
+        @else
+        <span style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                     background:var(--mini-bg);border:1px solid var(--mini-border);color:var(--text-muted);font-size:.9rem;">‹</span>
         @endif
 
-        {{-- Pledges Table --}}
-        <div class="flex items-center gap-2 pt-2">
-            <div class="h-px flex-1 bg-gray-800"></div>
-            <span class="text-xs font-semibold text-gray-500 uppercase tracking-widest">Recent Pledges</span>
-            <div class="h-px flex-1 bg-gray-800"></div>
-        </div>
+        @if($pStart > 1)
+            <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['page'=>1])) }}"
+               style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;
+                      background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--chip-color);
+                      text-decoration:none;font-size:.75rem;font-weight:600;">1</a>
+            @if($pStart > 2)<span style="color:var(--text-muted);font-size:.75rem;">…</span>@endif
+        @endif
 
-        <div class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-gray-800 text-left">
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Donor</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Item</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide text-right">Qty</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-800">
-                        @forelse ($recentPledges as $pledge)
-                            <tr class="hover:bg-gray-800/40 transition-colors">
-                                <td class="px-4 py-3 font-medium text-gray-200">{{ $pledge->donor_name }}</td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-block bg-sky-900/50 text-sky-300 border border-sky-700/40 text-xs px-2 py-0.5 rounded-full">
-                                        {{ optional($pledge->item)->name ?? '—' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-right font-semibold text-emerald-400">
-                                    {{ number_format($pledge->pledged_quantity, 2) }}
-                                    <span class="text-xs text-gray-500">{{ optional($pledge->item)->unit }}</span>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" class="px-4 py-8 text-center text-gray-500">No pledges yet.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        @for($i = $pStart; $i <= $pEnd; $i++)
+            <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['page'=>$i])) }}"
+               style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;
+                      background:{{ $i===$page ? 'rgba(16,185,129,.2)' : 'var(--chip-bg)' }};
+                      border:1px solid {{ $i===$page ? 'rgba(16,185,129,.5)' : 'var(--chip-border)' }};
+                      color:{{ $i===$page ? '#10b981' : 'var(--chip-color)' }};
+                      text-decoration:none;font-size:.75rem;font-weight:{{ $i===$page ? '700' : '600' }};
+                      transition:all .15s;">{{ $i }}</a>
+        @endfor
 
-        {{-- Legend --}}
-        <div class="flex flex-wrap gap-4 text-xs text-gray-500 pb-6">
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Fulfilled (≥100%)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> In Progress (50–99%)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Needs Donations (&lt;50%)</span>
-        </div>
+        @if($pEnd < $totalPages)
+            @if($pEnd < $totalPages - 1)<span style="color:var(--text-muted);font-size:.75rem;">…</span>@endif
+            <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['page'=>$totalPages])) }}"
+               style="min-width:2.2rem;height:2.2rem;border-radius:10px;padding:0 .5rem;display:flex;align-items:center;justify-content:center;
+                      background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--chip-color);
+                      text-decoration:none;font-size:.75rem;font-weight:600;">{{ $totalPages }}</a>
+        @endif
 
-    </main>
+        {{-- Next --}}
+        @if($page < $totalPages)
+        <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['page'=>$page+1])) }}"
+           style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                  background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text-main);
+                  text-decoration:none;font-size:.9rem;transition:all .15s;">›</a>
+        @else
+        <span style="display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;
+                     background:var(--mini-bg);border:1px solid var(--mini-border);color:var(--text-muted);font-size:.9rem;">›</span>
+        @endif
+    </div>
+    <p style="text-align:center;font-size:.65rem;color:var(--text-muted);margin-bottom:.5rem;">
+        පිටුව {{ $page }} / {{ $totalPages }} &nbsp;·&nbsp; මුළු {{ $totalCount }} භාණ්ඩ
+    </p>
+    @endif
+
+    {{-- ══ RECENT PLEDGES ══════════════════════════════════ --}}
+    <div class="pub-section-title">මෑත පොරොන්දු</div>
+
+    @if($recentPledges->isEmpty())
+        <p style="text-align:center;color:#6b7280;padding:2rem 0;font-size:.85rem;">පොරොන්දු නොමැත</p>
+    @else
+        <div style="display:flex;flex-direction:column;gap:.5rem;">
+            @foreach($recentPledges as $pledge)
+                <div class="pub-pledge-card">
+                    <div style="min-width:0;flex:1;">
+                        <div class="pub-pledge-name">{{ $pledge->donor_name }}</div>
+                        <div class="pub-pledge-item">{{ optional($pledge->item)->name ?? '—' }}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="pub-pledge-qty">{{ number_format($pledge->pledged_quantity,2) }}</div>
+                        <div class="pub-pledge-unit">{{ optional($pledge->item)->unit }}</div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
+    {{-- ══ LEGEND ══════════════════════════════════════════ --}}
+    <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem;font-size:.72rem;color:#6b7280;">
+        <span style="display:flex;align-items:center;gap:.4rem;">
+            <span style="width:.65rem;height:.65rem;border-radius:50%;background:#10b981;display:inline-block;"></span> සම්පූර්ණ (≥100%)
+        </span>
+        <span style="display:flex;align-items:center;gap:.4rem;">
+            <span style="width:.65rem;height:.65rem;border-radius:50%;background:#f59e0b;display:inline-block;"></span> ක්‍රියාත්මක (50–99%)
+        </span>
+        <span style="display:flex;align-items:center;gap:.4rem;">
+            <span style="width:.65rem;height:.65rem;border-radius:50%;background:#ef4444;display:inline-block;"></span> දායකත්ව අවශ්‍යයි (&lt;50%)
+        </span>
+    </div>
+
+</main>
+
+{{-- ══ FOOTER ══════════════════════════════════════════════ --}}
+<footer class="pub-footer">
+    © {{ date('Y') }} සියලු හිමිකම් ඇවිරිණි &nbsp;|&nbsp;
+    <a href="https://www.mahamevnawa.lk" target="_blank" rel="noopener">මහමෙව්නාව භාවනා අසපුව</a>
+</footer>
+
+<script>
+function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+    html.classList.toggle('dark', !isDark);
+    localStorage.setItem('pub-theme', isDark ? 'light' : 'dark');
+    document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+}
+
+// Set correct icon on load
+(function() {
+    const t = localStorage.getItem('pub-theme') || 'dark';
+    document.getElementById('themeIcon').textContent = t === 'dark' ? '🌙' : '☀️';
+})();
+</script>
+
 </body>
 </html>
