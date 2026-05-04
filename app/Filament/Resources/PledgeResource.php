@@ -17,16 +17,11 @@ class PledgeResource extends Resource
     protected static ?string $model = Pledge::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-heart';
-
     protected static ?string $navigationLabel = 'පොරොන්දු';
-
     protected static ?string $modelLabel = 'පොරොන්දුව';
-
     protected static ?string $pluralModelLabel = 'පොරොන්දු';
-
     protected static ?int $navigationSort = 2;
-
-    protected static ?string $navigationGroup = 'දානශාලා කළමනාකරණය';
+    protected static ?string $navigationGroup = null;
 
     public static function getNavigationBadge(): ?string
     {

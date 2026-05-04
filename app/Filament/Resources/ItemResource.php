@@ -16,16 +16,11 @@ class ItemResource extends Resource
     protected static ?string $model = Item::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
-
     protected static ?string $navigationLabel = 'භාණ්ඩ';
-
     protected static ?string $modelLabel = 'භාණ්ඩය';
-
     protected static ?string $pluralModelLabel = 'භාණ්ඩ';
-
     protected static ?int $navigationSort = 1;
-
-    protected static ?string $navigationGroup = 'දානශාලා කළමනාකරණය';
+    protected static ?string $navigationGroup = null;
 
     public static function getNavigationBadge(): ?string
     {

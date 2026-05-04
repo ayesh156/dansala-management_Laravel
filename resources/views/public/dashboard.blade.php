@@ -86,43 +86,40 @@
         }
         .pub-nav-inner {
             max-width:900px; margin:0 auto;
-            padding:.55rem 1rem;
-            display:flex; align-items:center; gap:.6rem;
+            padding:.6rem 1rem .5rem;
+            display:flex; flex-direction:column; gap:.35rem;
         }
 
-        /* Logo pill */
-        .pub-logo-pill {
-            display:flex; align-items:center; gap:.45rem; flex-shrink:0;
+        /* Top row */
+        .pub-nav-top {
+            display:flex; align-items:center; gap:.55rem;
         }
+
+        /* Logo */
+        .pub-logo-pill { display:flex; align-items:center; flex-shrink:0; }
         .pub-logo-pill img {
-            height:1.85rem; width:1.85rem; border-radius:50%; object-fit:cover;
-            border:2px solid rgba(16,185,129,.5);
-            box-shadow:0 0 10px rgba(16,185,129,.25);
+            height:2.4rem; width:2.4rem; border-radius:50%; object-fit:cover;
+            border:2px solid rgba(16,185,129,.55);
+            box-shadow:0 0 14px rgba(16,185,129,.3);
         }
 
-        /* Brand text — single line, truncate */
+        /* Brand text */
         .pub-brand-col { min-width:0; flex:1; }
         .pub-brand-text {
-            font-size:.82rem; font-weight:700; color:var(--text-main);
+            font-size:.9rem; font-weight:800; color:var(--text-main);
+            line-height:1.3; letter-spacing:-.01em;
             white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-            line-height:1.2;
         }
-        .pub-brand-sub { font-size:.6rem; color:var(--text-sub); white-space:nowrap; }
 
-        /* Right side — time badge + toggle */
-        .pub-nav-right { display:flex; align-items:center; gap:.4rem; flex-shrink:0; }
-        .pub-time-badge {
-            display:flex; align-items:center; gap:.3rem;
-            background:var(--chip-bg); border:1px solid var(--chip-border);
-            border-radius:999px; padding:.2rem .6rem;
-            font-size:.62rem; color:var(--text-sub); white-space:nowrap;
-        }
-        .pub-time-badge svg { flex-shrink:0; opacity:.6; }
-        .pub-time-badge strong { color:var(--text-main); font-weight:600; }
+        /* Right icons */
+        .pub-nav-icons { display:flex; align-items:center; gap:.35rem; flex-shrink:0; }
 
-        /* Theme toggle button */
+        /* Bottom row — time */
+        .pub-nav-bottom { display:none; }
+
+        /* Theme toggle & admin buttons */
         .theme-toggle {
-            width:1.85rem; height:1.85rem; border-radius:50%; flex-shrink:0;
+            width:1.9rem; height:1.9rem; border-radius:50%; flex-shrink:0;
             background: var(--chip-bg); border:1px solid var(--chip-border);
             color: var(--chip-color); cursor:pointer;
             display:flex; align-items:center; justify-content:center;
@@ -242,48 +239,56 @@
 {{-- ══ NAVBAR ══════════════════════════════════════════════ --}}
 <nav class="pub-nav">
     <div class="pub-nav-inner">
-        {{-- Logo --}}
-        <div class="pub-logo-pill">
-            <img src="{{ asset('logo.jpg') }}" alt="logo" />
+
+        {{-- Top row: logo + brand + icons --}}
+        <div class="pub-nav-top">
+            <div class="pub-logo-pill">
+                <img src="{{ asset('logo.jpg') }}" alt="logo" />
+            </div>
+
+            <div class="pub-brand-col">
+                <div class="pub-brand-text">දන්සල් කළමනාකරණ</div>
+                <div style="display:flex;align-items:baseline;gap:.3rem;margin-top:.05rem;">
+                    <span class="pub-brand-text">පද්ධතිය</span>
+                    <span style="font-size:.72rem;font-weight:700;color:#10b981;white-space:nowrap;">· මහමෙව්නාව</span>
+                </div>
+            </div>
+
+            <div class="pub-nav-icons">
+                <a href="{{ url('/admin') }}"
+                   title="පරිපාලන පද්ධතිය"
+                   style="
+                       display:inline-flex;align-items:center;justify-content:center;
+                       width:1.9rem;height:1.9rem;border-radius:50%;flex-shrink:0;
+                       background:var(--chip-bg);border:1px solid var(--chip-border);
+                       color:var(--chip-color);text-decoration:none;transition:all .2s;
+                   "
+                   onmouseover="this.style.background='rgba(99,102,241,.15)';this.style.borderColor='rgba(99,102,241,.4)';this.style.color='#818cf8'"
+                   onmouseout="this.style.background='var(--chip-bg)';this.style.borderColor='var(--chip-border)';this.style.color='var(--chip-color)'"
+                >
+                    <svg style="width:.85rem;height:.85rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </a>
+                <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Theme">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
         </div>
 
-        {{-- Brand text --}}
-        <div class="pub-brand-col">
-            <div class="pub-brand-text">දන්සල් කළමනාකරණ පද්ධතිය</div>
-            <div class="pub-brand-sub">දායකත්ව ප්‍රගති නිරීක්ෂණය</div>
-        </div>
-
-        {{-- Right: time badge + admin link + theme toggle --}}
-        <div class="pub-nav-right">
+        {{-- Bottom row: time --}}
+        <div class="pub-nav-bottom">
             <div class="pub-time-badge">
                 <svg style="width:.65rem;height:.65rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <strong>{{ now()->format('d M, h:i A') }}</strong>
+                <strong>{{ now()->format('d M Y, h:i A') }}</strong>
             </div>
-            <a href="{{ url('/admin') }}"
-               title="පරිපාලන පද්ධතිය"
-               style="
-                   display:inline-flex;align-items:center;justify-content:center;
-                   width:1.85rem;height:1.85rem;border-radius:50%;flex-shrink:0;
-                   background:var(--chip-bg);border:1px solid var(--chip-border);
-                   color:var(--chip-color);text-decoration:none;
-                   transition:all .2s;
-               "
-               onmouseover="this.style.background='rgba(99,102,241,.15)';this.style.borderColor='rgba(99,102,241,.4)';this.style.color='#818cf8'"
-               onmouseout="this.style.background='var(--chip-bg)';this.style.borderColor='var(--chip-border)';this.style.color='var(--chip-color)'"
-            >
-                <svg style="width:.85rem;height:.85rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-            </a>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Theme">
-                <span id="themeIcon">🌙</span>
-            </button>
         </div>
+
     </div>
 </nav>
 
@@ -493,6 +498,9 @@
                     <div style="min-width:0;flex:1;">
                         <div class="pub-pledge-name">{{ $pledge->donor_name }}</div>
                         <div class="pub-pledge-item">{{ optional($pledge->item)->name ?? '—' }}</div>
+                        <div style="font-size:.62rem;color:var(--text-muted);margin-top:.2rem;">
+                            {{ $pledge->created_at->format('d M Y, h:i A') }}
+                        </div>
                     </div>
                     <div style="text-align:right;">
                         <div class="pub-pledge-qty">{{ number_format($pledge->pledged_quantity,2) }}</div>
