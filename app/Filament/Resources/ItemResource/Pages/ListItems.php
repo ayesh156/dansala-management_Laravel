@@ -32,7 +32,7 @@ class ListItems extends ListRecords
 
     public function getViewData(): array
     {
-        $query = Item::withSum('pledges', 'pledged_quantity');
+        $query = Item::query();
 
         if (filled($this->mobileSearch)) {
             $s = '%' . $this->mobileSearch . '%';
@@ -40,7 +40,7 @@ class ListItems extends ListRecords
         }
 
         $all = $query->get()->map(function ($item) {
-            $pledged  = (float) ($item->pledges_sum_pledged_quantity ?? 0);
+            $pledged  = $item->total_pledged;
             $required = (float) $item->required_quantity;
             $item->total_pledged_qty = $pledged;
             $item->remaining_qty     = max(0, $required - $pledged);

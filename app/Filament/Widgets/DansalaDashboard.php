@@ -17,9 +17,8 @@ class DansalaDashboard extends BaseWidget
         $totalItems     = Item::count();
         $totalPledges   = Pledge::count();
         $totalDonors    = Pledge::distinct('donor_name')->count('donor_name');
-        $fulfilledItems = Item::withSum('pledges', 'pledged_quantity')
-            ->get()
-            ->filter(fn ($item) => (float) $item->pledges_sum_pledged_quantity >= (float) $item->required_quantity)
+        $fulfilledItems = Item::all()
+            ->filter(fn ($item) => $item->total_pledged >= (float) $item->required_quantity)
             ->count();
 
         return [
