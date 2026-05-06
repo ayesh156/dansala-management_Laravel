@@ -383,7 +383,7 @@
 
         {{-- Footer --}}
         <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:.7rem;margin-top:.9rem;text-align:center;">
-            <p style="font-size:.72rem;color:#6b7280;margin:0;font-style:italic;">🌷 "බාරගෙන" ඉතිරිව ඇති දුවා ප්‍රමාණය පහත දැක්වේ 🌷</p>
+            <p style="font-size:.72rem;color:#6b7280;margin:0;font-style:italic;">🌷 "බාරගෙන" ඉතිරිවී ඇති ද්‍රව්‍ය ප්‍රමාණය මෙසේය. 🌷</p>
         </div>
     </div>
 
