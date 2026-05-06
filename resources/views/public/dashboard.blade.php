@@ -108,7 +108,6 @@
         .pub-brand-text {
             font-size:.9rem; font-weight:800; color:var(--text-main);
             line-height:1.3; letter-spacing:-.01em;
-            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
         }
 
         /* Right icons */
@@ -260,11 +259,8 @@
             </div>
 
             <div class="pub-brand-col">
-                <div class="pub-brand-text">දන්සල් කළමනාකරණ</div>
-                <div style="display:flex;align-items:baseline;gap:.3rem;margin-top:.05rem;">
-                    <span class="pub-brand-text">පද්ධතිය</span>
-                    <span style="font-size:.72rem;font-weight:700;color:#10b981;white-space:nowrap;">· මහමෙව්නාව</span>
-                </div>
+                <div style="font-size:.82rem;font-weight:800;color:var(--text-main);line-height:1.25;letter-spacing:-.01em;">දන්සල් කළමනාකරණ පද්ධතිය</div>
+                <div style="font-size:.68rem;font-weight:700;color:#10b981;margin-top:.1rem;line-height:1.3;">මාතර අපරැක්ක මහමෙව්නාව</div>
             </div>
 
             <div class="pub-nav-icons">
@@ -306,6 +302,90 @@
 </nav>
 
 <main style="max-width:900px;margin:0 auto;padding:1.25rem 1rem 2rem;">
+
+    {{-- ══ ANNOUNCEMENT BANNER ════════════════════════════ --}}
+    <div style="
+        position:relative; overflow:hidden;
+        border-radius:20px; margin-bottom:1.25rem;
+        background:linear-gradient(135deg,#052e16 0%,#0f172a 60%,#1e1b4b 100%);
+        border:1px solid rgba(16,185,129,.25);
+        box-shadow:0 0 40px rgba(16,185,129,.08);
+        padding:1.25rem 1.1rem 1.1rem;
+    ">
+        {{-- Glow orbs --}}
+        <div style="position:absolute;width:200px;height:200px;border-radius:50%;filter:blur(60px);opacity:.12;background:#10b981;top:-60px;right:-40px;pointer-events:none;"></div>
+        <div style="position:absolute;width:150px;height:150px;border-radius:50%;filter:blur(50px);opacity:.08;background:#6366f1;bottom:-40px;left:-30px;pointer-events:none;"></div>
+
+        {{-- Header --}}
+        <div style="text-align:center;margin-bottom:1rem;">
+            <div style="font-size:1.1rem;font-weight:800;color:#f9fafb;line-height:1.6;">
+                🙏 නමෝ බුද්ධාය 🙏
+            </div>
+        </div>
+
+        {{-- Main text --}}
+        <div style="font-size:.8rem;color:#d1d5db;line-height:1.9;display:flex;flex-direction:column;gap:.6rem;">
+
+            <p>☸️ 2026.05.30 වන දින ට යෙදෙන උතුම් වෙසක් පුන් පොහෝ දිනය මූලික කරගෙන <strong style="color:#6ee7b7;">මාතර අපරැක්ක මහමෙව්නාව මහා විහාරය</strong> විසින් "දිනය" පුරා පවත්වනු ලබන සීල භාවනා වැඩසටහන, උතුම් සෑ වන්දනාව, වෙසක් සැරසිලි සහිත බොහෝ ආගමික කටයුතු සංවිධානය කර ඇත.</p>
+
+            <p>✨ මෙම උතුම් පුණ්‍ය කටයුතු වලට සහභාගි වන සියලු සැදැහැවතුන් වෙනුවෙන් බත් දන්සැලක්, කඩල දන්සැලක්, අයිස්ක්‍රීම් දන්සැලක්, සරුවත් දන්සැලක්, කිරි තේ සමග පොල් රොටී දන්සැලක් පැවැත්වීමට කටයුතු සිදු වෙමින් පවතී.</p>
+
+            <p>💐 දන්සැල් පවත්වන ආකාරය පහත දැක්වේ ☸️</p>
+
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:.75rem .9rem;display:flex;flex-direction:column;gap:.45rem;">
+                <div style="display:flex;align-items:flex-start;gap:.5rem;">
+                    <span style="color:#f87171;flex-shrink:0;">⭕</span>
+                    <span>මැයි 30 වෙසක් පොහෝ දින උදෑසන <strong style="color:#fbbf24;">10.00</strong> සිට කඩල දන්සැල, සරුවත් දන්සැල සහ සවස කිරි තේ සමග පොල් රොටී දන්සැල</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:.5rem;">
+                    <span style="color:#f87171;flex-shrink:0;">⭕</span>
+                    <span>පොහෝ දිනට පසු දින උදෑසන <strong style="color:#fbbf24;">10.00</strong> සිට මහා බත් දන්සැල හා අයිස්ක්‍රීම් දන්සැල</span>
+                </div>
+            </div>
+
+            <p>☸️ දන්සැල් කටයුතු සාර්ථකව සිදු කර ගැනීමට පින්වත් ඔබටත් දායක විය හැකිය. ද්‍රව්‍යමය වශයෙන් හෝ මුදල් ආධාරමය වශයෙන් මේ සඳහා දායකත්වය ලබා ගත හැකිය.</p>
+
+            <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:.75rem .9rem;">
+                <div style="font-size:.72rem;font-weight:700;color:#6ee7b7;margin-bottom:.45rem;">🙏 ගිණුම් විස්තර ✨</div>
+                <p style="margin:0;line-height:1.8;">
+                    මහමෙව්නාව මහා විහාර උපස්ථාන කමිටුව,
+                    <strong style="color:#fbbf24;">015360000114</strong>,
+                    සම්පත් බැංකුව, මාතර ශාඛාවට මුදල් බැර කර එහි රිසිට්පත
+                    <strong style="color:#34d399;">0714978310</strong>
+                    අංකය වෙත වට්සැප් කරන්න.
+                </p>
+            </div>
+
+            <div>
+                <p style="margin:0 0 .45rem 0;">✨ දන්සැල සම්බන්ධ සියලු තොරතුරු දැන ගැනීමට පහත දුරකථන අංක අමතන්න.</p>
+                <div style="display:flex;flex-direction:column;gap:.3rem;">
+                    <div style="display:flex;align-items:center;gap:.5rem;">
+                        <span>☎️</span>
+                        <a href="tel:0710458318" style="color:#34d399;font-weight:700;text-decoration:none;">0710458318</a>
+                        <span style="color:#9ca3af;">පින්වත් තිලක ස්වාමින්වහන්සේ</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:.5rem;">
+                        <span>☎️</span>
+                        <a href="tel:0702994214" style="color:#34d399;font-weight:700;text-decoration:none;">0702994214</a>
+                        <span style="color:#9ca3af;">/</span>
+                        <a href="tel:0701021422" style="color:#34d399;font-weight:700;text-decoration:none;">0701021422</a>
+                        <span style="color:#9ca3af;">කුමාර</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:.5rem;">
+                        <span>☎️</span>
+                        <a href="tel:0714978310" style="color:#34d399;font-weight:700;text-decoration:none;">0714978310</a>
+                        <span style="color:#9ca3af;">දනුෂ්ක</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Footer --}}
+        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:.7rem;margin-top:.9rem;text-align:center;">
+            <p style="font-size:.72rem;color:#6b7280;margin:0;font-style:italic;">🌷 "බාරගෙන" ඉතිරිව ඇති දුවා ප්‍රමාණය පහත දැක්වේ 🌷</p>
+        </div>
+    </div>
 
     {{-- ══ STATS ══════════════════════════════════════════ --}}
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.5rem;">
