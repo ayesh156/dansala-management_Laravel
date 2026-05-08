@@ -51,16 +51,38 @@
             --mini-border:rgba(255,255,255,.06);
             --pledge-bg: rgba(255,255,255,.03);
             --pledge-border:rgba(255,255,255,.06);
+            /* announcement banner dark vars */
+            --ann-bg:        linear-gradient(135deg,#052e16 0%,#0f172a 60%,#1e1b4b 100%);
+            --ann-border:    rgba(16,185,129,.25);
+            --ann-shadow:    0 0 40px rgba(16,185,129,.08);
+            --ann-title:     #f9fafb;
+            --ann-text:      #d1d5db;
+            --ann-strong:    #6ee7b7;
+            --ann-orb1:      #10b981;
+            --ann-orb2:      #6366f1;
+            --ann-schedule-bg:   rgba(255,255,255,.04);
+            --ann-schedule-border: rgba(255,255,255,.07);
+            --ann-time-color:#fbbf24;
+            --ann-bank-bg:   rgba(16,185,129,.07);
+            --ann-bank-border:rgba(16,185,129,.2);
+            --ann-bank-title:#6ee7b7;
+            --ann-bank-num:  #fbbf24;
+            --ann-bank-wp:   #34d399;
+            --ann-phone:     #34d399;
+            --ann-phone-sub: #9ca3af;
+            --ann-footer-border: rgba(255,255,255,.06);
+            --ann-footer-text:   #6b7280;
+            --ann-dot:       #f87171;
         }
 
         /* ── LIGHT theme ── */
         html:not(.dark) {
-            --bg:        #f0fdf4;
-            --nav-bg:    rgba(255,255,255,0.95);
+            --bg:        #fdf6ee;
+            --nav-bg:    rgba(255,255,255,0.97);
             --nav-border:rgba(0,0,0,0.08);
             --card-bg:   #ffffff;
             --card-border:rgba(0,0,0,0.08);
-            --text-main: #111827;
+            --text-main: #1a1a2e;
             --text-sub:  #6b7280;
             --text-muted:#9ca3af;
             --input-bg:  #f9fafb;
@@ -73,6 +95,28 @@
             --mini-border:rgba(0,0,0,.07);
             --pledge-bg: #ffffff;
             --pledge-border:rgba(0,0,0,.07);
+            /* announcement banner light vars */
+            --ann-bg:        linear-gradient(135deg,#fffbf0 0%,#fff7ed 40%,#fef3c7 70%,#ecfdf5 100%);
+            --ann-border:    rgba(245,158,11,.35);
+            --ann-shadow:    0 4px 32px rgba(245,158,11,.12), 0 1px 8px rgba(16,185,129,.08);
+            --ann-title:     #92400e;
+            --ann-text:      #374151;
+            --ann-strong:    #065f46;
+            --ann-orb1:      #f59e0b;
+            --ann-orb2:      #10b981;
+            --ann-schedule-bg:   rgba(245,158,11,.06);
+            --ann-schedule-border: rgba(245,158,11,.2);
+            --ann-time-color:#b45309;
+            --ann-bank-bg:   rgba(16,185,129,.07);
+            --ann-bank-border:rgba(16,185,129,.25);
+            --ann-bank-title:#065f46;
+            --ann-bank-num:  #b45309;
+            --ann-bank-wp:   #059669;
+            --ann-phone:     #059669;
+            --ann-phone-sub: #6b7280;
+            --ann-footer-border: rgba(0,0,0,.07);
+            --ann-footer-text:   #9ca3af;
+            --ann-dot:       #ef4444;
         }
 
         body { background: var(--bg); color: var(--text-main); }
@@ -169,9 +213,22 @@
         .dark .pub-card--green { background:linear-gradient(135deg,#052e16 0%,#0f172a 65%); }
         .dark .pub-card--amber { background:linear-gradient(135deg,#1c1003 0%,#0f172a 65%); }
         .dark .pub-card--red   { background:linear-gradient(135deg,#1c0505 0%,#0f172a 65%); }
-        html:not(.dark) .pub-card--green { background:linear-gradient(135deg,#ecfdf5,#f0fdf4); border-color:rgba(16,185,129,.2); }
-        html:not(.dark) .pub-card--amber { background:linear-gradient(135deg,#fffbeb,#fefce8); border-color:rgba(245,158,11,.2); }
-        html:not(.dark) .pub-card--red   { background:linear-gradient(135deg,#fff1f2,#fff5f5); border-color:rgba(239,68,68,.2); }
+        html:not(.dark) .pub-card--green {
+            background:linear-gradient(135deg,#d1fae5 0%,#ecfdf5 50%,#f0fdf4 100%);
+            border-color:rgba(16,185,129,.3);
+            box-shadow:0 2px 16px rgba(16,185,129,.1);
+        }
+        html:not(.dark) .pub-card--amber {
+            background:linear-gradient(135deg,#fef3c7 0%,#fffbeb 50%,#fefce8 100%);
+            border-color:rgba(245,158,11,.3);
+            box-shadow:0 2px 16px rgba(245,158,11,.1);
+        }
+        html:not(.dark) .pub-card--red {
+            background:linear-gradient(135deg,#fee2e2 0%,#fff1f2 50%,#fff5f5 100%);
+            border-color:rgba(239,68,68,.3);
+            box-shadow:0 2px 16px rgba(239,68,68,.1);
+        }
+        html:not(.dark) .pub-item-card:hover { transform:translateY(-2px); }
 
         .pub-glow { position:absolute; border-radius:50%; filter:blur(45px); pointer-events:none; opacity:.16; }
         html:not(.dark) .pub-glow { opacity:.08; }
@@ -195,6 +252,9 @@
 
         .pub-stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; }
         .pub-mini-stat  { background:var(--mini-bg); border:1px solid var(--mini-border); border-radius:12px; padding:.5rem .25rem; text-align:center; }
+        html:not(.dark) .pub-card--green .pub-mini-stat { background:rgba(255,255,255,.7); border-color:rgba(16,185,129,.15); }
+        html:not(.dark) .pub-card--amber .pub-mini-stat { background:rgba(255,255,255,.7); border-color:rgba(245,158,11,.15); }
+        html:not(.dark) .pub-card--red   .pub-mini-stat { background:rgba(255,255,255,.7); border-color:rgba(239,68,68,.15); }
         .pub-mini-lbl   { font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-sub); margin-bottom:.2rem; }
         .pub-mini-val   { font-size:.88rem; font-weight:700; line-height:1.1; }
         .pub-mini-unit  { font-size:.6rem; color:var(--text-muted); margin-top:.1rem; }
@@ -244,6 +304,65 @@
 
         /* Item name color */
         .pub-item-name { color: var(--text-main); }
+
+        /* ── ANNOUNCEMENT BANNER ── */
+        .pub-ann-banner {
+            position:relative; overflow:hidden;
+            border-radius:20px; margin-bottom:1.25rem;
+            background: var(--ann-bg);
+            border:1px solid var(--ann-border);
+            box-shadow: var(--ann-shadow);
+            padding:1.25rem 1.1rem 1.1rem;
+        }
+        .pub-ann-orb1 {
+            position:absolute;width:200px;height:200px;border-radius:50%;
+            filter:blur(60px);pointer-events:none;
+            background:var(--ann-orb1);top:-60px;right:-40px;
+            opacity:.12;
+        }
+        html:not(.dark) .pub-ann-orb1 { opacity:.18; }
+        .pub-ann-orb2 {
+            position:absolute;width:150px;height:150px;border-radius:50%;
+            filter:blur(50px);pointer-events:none;
+            background:var(--ann-orb2);bottom:-40px;left:-30px;
+            opacity:.08;
+        }
+        html:not(.dark) .pub-ann-orb2 { opacity:.14; }
+        .pub-ann-title { font-size:1.1rem;font-weight:800;color:var(--ann-title);line-height:1.6;text-align:center; }
+        html:not(.dark) .pub-ann-title {
+            background: linear-gradient(135deg,#92400e,#b45309,#065f46);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+        }
+        .pub-ann-body { font-size:.8rem;color:var(--ann-text);line-height:1.9;display:flex;flex-direction:column;gap:.6rem; }
+        .pub-ann-strong { color:var(--ann-strong); }
+        .pub-ann-schedule {
+            background:var(--ann-schedule-bg);border:1px solid var(--ann-schedule-border);
+            border-radius:14px;padding:.75rem .9rem;display:flex;flex-direction:column;gap:.45rem;
+        }
+        html:not(.dark) .pub-ann-schedule {
+            background: linear-gradient(135deg,rgba(255,251,235,.8),rgba(236,253,245,.6));
+        }
+        .pub-ann-dot { color:var(--ann-dot);flex-shrink:0; }
+        .pub-ann-time { color:var(--ann-time-color);font-weight:700; }
+        .pub-ann-bank {
+            background:var(--ann-bank-bg);border:1px solid var(--ann-bank-border);
+            border-radius:14px;padding:.75rem .9rem;
+        }
+        html:not(.dark) .pub-ann-bank {
+            background: linear-gradient(135deg,rgba(236,253,245,.9),rgba(240,253,244,.7));
+        }
+        .pub-ann-bank-title { font-size:.72rem;font-weight:700;color:var(--ann-bank-title);margin-bottom:.45rem; }
+        .pub-ann-bank-num { color:var(--ann-bank-num);font-weight:700; }
+        .pub-ann-bank-wp { color:var(--ann-bank-wp);font-weight:700; }
+        .pub-ann-phone { color:var(--ann-phone);font-weight:700;text-decoration:none; }
+        .pub-ann-phone:hover { text-decoration:underline; }
+        .pub-ann-phone-sub { color:var(--ann-phone-sub); }
+        .pub-ann-footer {
+            border-top:1px solid var(--ann-footer-border);
+            padding-top:.7rem;margin-top:.9rem;text-align:center;
+        }
+        .pub-ann-footer p { font-size:.72rem;color:var(--ann-footer-text);margin:0;font-style:italic; }
+        html:not(.dark) .pub-ann-footer p { color:#a16207; }
     </style>
 </head>
 <body>
@@ -304,54 +423,47 @@
 <main style="max-width:900px;margin:0 auto;padding:1.25rem 1rem 2rem;">
 
     {{-- ══ ANNOUNCEMENT BANNER ════════════════════════════ --}}
-    <div style="
-        position:relative; overflow:hidden;
-        border-radius:20px; margin-bottom:1.25rem;
-        background:linear-gradient(135deg,#052e16 0%,#0f172a 60%,#1e1b4b 100%);
-        border:1px solid rgba(16,185,129,.25);
-        box-shadow:0 0 40px rgba(16,185,129,.08);
-        padding:1.25rem 1.1rem 1.1rem;
-    ">
+    <div class="pub-ann-banner">
         {{-- Glow orbs --}}
-        <div style="position:absolute;width:200px;height:200px;border-radius:50%;filter:blur(60px);opacity:.12;background:#10b981;top:-60px;right:-40px;pointer-events:none;"></div>
-        <div style="position:absolute;width:150px;height:150px;border-radius:50%;filter:blur(50px);opacity:.08;background:#6366f1;bottom:-40px;left:-30px;pointer-events:none;"></div>
+        <div class="pub-ann-orb1"></div>
+        <div class="pub-ann-orb2"></div>
 
         {{-- Header --}}
         <div style="text-align:center;margin-bottom:1rem;">
-            <div style="font-size:1.1rem;font-weight:800;color:#f9fafb;line-height:1.6;">
+            <div class="pub-ann-title">
                 🙏 නමෝ බුද්ධාය 🙏
             </div>
         </div>
 
         {{-- Main text --}}
-        <div style="font-size:.8rem;color:#d1d5db;line-height:1.9;display:flex;flex-direction:column;gap:.6rem;">
+        <div class="pub-ann-body">
 
-            <p>☸️ 2026.05.30 වන දින ට යෙදෙන උතුම් වෙසක් පුන් පොහෝ දිනය මූලික කරගෙන <strong style="color:#6ee7b7;">මාතර අපරැක්ක මහමෙව්නාව මහා විහාරය</strong> විසින් "දිනය" පුරා පවත්වනු ලබන සීල භාවනා වැඩසටහන, උතුම් සෑ වන්දනාව, වෙසක් සැරසිලි සහිත බොහෝ ආගමික කටයුතු සංවිධානය කර ඇත.</p>
+            <p>☸️ 2026.05.30 වන දින ට යෙදෙන උතුම් වෙසක් පුන් පොහෝ දිනය මූලික කරගෙන <strong class="pub-ann-strong">මාතර අපරැක්ක මහමෙව්නාව මහා විහාරය</strong> විසින් "දිනය" පුරා පවත්වනු ලබන සීල භාවනා වැඩසටහන, උතුම් සෑ වන්දනාව, වෙසක් සැරසිලි සහිත බොහෝ ආගමික කටයුතු සංවිධානය කර ඇත.</p>
 
             <p>✨ මෙම උතුම් පුණ්‍ය කටයුතු වලට සහභාගි වන සියලු සැදැහැවතුන් වෙනුවෙන් බත් දන්සැලක්, කඩල දන්සැලක්, අයිස්ක්‍රීම් දන්සැලක්, සරුවත් දන්සැලක්, කිරි තේ සමග පොල් රොටී දන්සැලක් පැවැත්වීමට කටයුතු සිදු වෙමින් පවතී.</p>
 
             <p>💐 දන්සැල් පවත්වන ආකාරය පහත දැක්වේ ☸️</p>
 
-            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:.75rem .9rem;display:flex;flex-direction:column;gap:.45rem;">
+            <div class="pub-ann-schedule">
                 <div style="display:flex;align-items:flex-start;gap:.5rem;">
-                    <span style="color:#f87171;flex-shrink:0;">⭕</span>
-                    <span>මැයි 30 වෙසක් පොහෝ දින උදෑසන <strong style="color:#fbbf24;">10.00</strong> සිට කඩල දන්සැල, සරුවත් දන්සැල සහ සවස කිරි තේ සමග පොල් රොටී දන්සැල</span>
+                    <span class="pub-ann-dot">⭕</span>
+                    <span>මැයි 30 වෙසක් පොහෝ දින උදෑසන <strong class="pub-ann-time">10.00</strong> සිට කඩල දන්සැල, සරුවත් දන්සැල සහ සවස කිරි තේ සමග පොල් රොටී දන්සැල</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:.5rem;">
-                    <span style="color:#f87171;flex-shrink:0;">⭕</span>
-                    <span>පොහෝ දිනට පසු දින උදෑසන <strong style="color:#fbbf24;">10.00</strong> සිට මහා බත් දන්සැල හා අයිස්ක්‍රීම් දන්සැල</span>
+                    <span class="pub-ann-dot">⭕</span>
+                    <span>පොහෝ දිනට පසු දින උදෑසන <strong class="pub-ann-time">10.00</strong> සිට මහා බත් දන්සැල හා අයිස්ක්‍රීම් දන්සැල</span>
                 </div>
             </div>
 
             <p>☸️ දන්සැල් කටයුතු සාර්ථකව සිදු කර ගැනීමට පින්වත් ඔබටත් දායක විය හැකිය. ද්‍රව්‍යමය වශයෙන් හෝ මුදල් ආධාරමය වශයෙන් මේ සඳහා දායකත්වය ලබා ගත හැකිය.</p>
 
-            <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:.75rem .9rem;">
-                <div style="font-size:.72rem;font-weight:700;color:#6ee7b7;margin-bottom:.45rem;">🙏 ගිණුම් විස්තර ✨</div>
+            <div class="pub-ann-bank">
+                <div class="pub-ann-bank-title">🙏 ගිණුම් විස්තර ✨</div>
                 <p style="margin:0;line-height:1.8;">
                     මහමෙව්නාව මහා විහාර උපස්ථාන කමිටුව,
-                    <strong style="color:#fbbf24;">015360000114</strong>,
+                    <strong class="pub-ann-bank-num">015360000114</strong>,
                     සම්පත් බැංකුව, මාතර ශාඛාවට මුදල් බැර කර එහි රිසිට්පත
-                    <strong style="color:#34d399;">0714978310</strong>
+                    <strong class="pub-ann-bank-wp">0714978310</strong>
                     අංකය වෙත වට්සැප් කරන්න.
                 </p>
             </div>
@@ -361,20 +473,20 @@
                 <div style="display:flex;flex-direction:column;gap:.3rem;">
                     <div style="display:flex;align-items:center;gap:.5rem;">
                         <span>☎️</span>
-                        <a href="tel:0710458318" style="color:#34d399;font-weight:700;text-decoration:none;">0710458318</a>
-                        <span style="color:#9ca3af;">පින්වත් තිලක ස්වාමින්වහන්සේ</span>
+                        <a href="tel:0710458318" class="pub-ann-phone">0710458318</a>
+                        <span class="pub-ann-phone-sub">පින්වත් තිලක ස්වාමින්වහන්සේ</span>
                     </div>
                     <div style="display:flex;align-items:center;gap:.5rem;">
                         <span>☎️</span>
-                        <a href="tel:0702994214" style="color:#34d399;font-weight:700;text-decoration:none;">0702994214</a>
-                        <span style="color:#9ca3af;">/</span>
-                        <a href="tel:0701021422" style="color:#34d399;font-weight:700;text-decoration:none;">0701021422</a>
-                        <span style="color:#9ca3af;">කුමාර</span>
+                        <a href="tel:0702994214" class="pub-ann-phone">0702994214</a>
+                        <span class="pub-ann-phone-sub">/</span>
+                        <a href="tel:0701021422" class="pub-ann-phone">0701021422</a>
+                        <span class="pub-ann-phone-sub">කුමාර</span>
                     </div>
                     <div style="display:flex;align-items:center;gap:.5rem;">
                         <span>☎️</span>
-                        <a href="tel:0714978310" style="color:#34d399;font-weight:700;text-decoration:none;">0714978310</a>
-                        <span style="color:#9ca3af;">දනුෂ්ක</span>
+                        <a href="tel:0714978310" class="pub-ann-phone">0714978310</a>
+                        <span class="pub-ann-phone-sub">දනුෂ්ක</span>
                     </div>
                 </div>
             </div>
@@ -382,8 +494,8 @@
         </div>
 
         {{-- Footer --}}
-        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:.7rem;margin-top:.9rem;text-align:center;">
-            <p style="font-size:.72rem;color:#6b7280;margin:0;font-style:italic;">🌷 "බාරගෙන" ඉතිරිවී ඇති ද්‍රව්‍ය ප්‍රමාණය මෙසේය. 🌷</p>
+        <div class="pub-ann-footer">
+            <p>🌷 "බාරගෙන" ඉතිරිවී ඇති ද්‍රව්‍ය ප්‍රමාණය මෙසේය. 🌷</p>
         </div>
     </div>
 
@@ -513,7 +625,7 @@
                     <div class="pub-stats-grid">
                         <div class="pub-mini-stat">
                             <div class="pub-mini-lbl">අවශ්‍ය</div>
-                            <div class="pub-mini-val" style="color:#e5e7eb;">{{ number_format($item->required_quantity,1) }}</div>
+                            <div class="pub-mini-val" style="color:var(--text-main);">{{ number_format($item->required_quantity,1) }}</div>
                             <div class="pub-mini-unit">{{ $item->unit }}</div>
                         </div>
                         <div class="pub-mini-stat">
